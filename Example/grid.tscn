@@ -1,25 +1,43 @@
-[gd_scene load_steps=3 format=3 uid="uid://dx7bsrw2b07kq"]
+[gd_scene load_steps=4 format=3 uid="uid://dx7bsrw2b07kq"]
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_1b4r6"]
 
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_nkebv"]
+albedo_color = Color(1, 0.109804, 1, 1)
+
 [sub_resource type="BoxMesh" id="BoxMesh_4ga63"]
+material = SubResource("StandardMaterial3D_nkebv")
 
 [node name="Root" type="Node3D"]
 
 [node name="Camera" type="Camera3D" parent="."]
-transform = Transform3D(1, 0, 0, 0, 0.869003, 0.494807, 0, -0.494807, 0.869003, 0.27785, 1.69384, 4.34033)
+transform = Transform3D(0.648651, -0.37659, 0.661386, 3.532e-17, 0.869003, 0.494807, -0.761086, -0.320957, 0.56368, 2.7172, 1.69384, 2.55248)
+projection = 1
 current = true
+size = 5.0
 
-[node name="MouseInput" type="MouseInput" parent="." node_paths=PackedStringArray("camera")]
+[node name="MouseInput" type="MouseInput" parent="." node_paths=PackedStringArray("camera", "mouseStart")]
 camera = NodePath("../Camera")
+mouseStart = NodePath("../CharacterBody3D2")
 transform = Transform3D(1, 0, 0, 0, 1, 6.78361e-09, 0, -4.05365e-10, 1, 0, -1.19209e-07, 0)
 
 [node name="CharacterBody3D" type="CharacterBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.56881, 0, -0.432783)
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="CharacterBody3D"]
 shape = SubResource("BoxShape3D_1b4r6")
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="CharacterBody3D"]
+mesh = SubResource("BoxMesh_4ga63")
+
+[node name="CharacterBody3D2" type="CharacterBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -1.23408, 0, 2.51403)
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="CharacterBody3D2"]
+shape = SubResource("BoxShape3D_1b4r6")
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="CharacterBody3D2"]
+transform = Transform3D(0.2, 0, 0, 0, 0.2, 0, 0, 0, 0.2, 0, 0, 0)
 mesh = SubResource("BoxMesh_4ga63")
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
