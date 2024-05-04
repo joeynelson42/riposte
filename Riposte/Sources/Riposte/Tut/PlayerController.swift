@@ -36,4 +36,9 @@ class PlayerController: CharacterBody2D {
         self.moveAndSlide()
         super._physicsProcess(delta: delta)
     }    
+    
+    @Callable
+    func onClick() {
+        GD.print("hello world")
+    }
 }
