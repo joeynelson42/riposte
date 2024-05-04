@@ -1,0 +1,15 @@
+[gd_scene load_steps=3 format=3 uid="uid://3560nqlvrprn"]
+
+[ext_resource type="Texture2D" uid="uid://celckoq4cibyg" path="res://icon.svg" id="1_eesjv"]
+
+[sub_resource type="CircleShape2D" id="CircleShape2D_cfqna"]
+
+[node name="Node2D" type="Node2D"]
+
+[node name="PlayerController" type="PlayerController" parent="."]
+
+[node name="CollisionShape2D" type="CollisionShape2D" parent="PlayerController"]
+shape = SubResource("CircleShape2D_cfqna")
+
+[node name="Sprite2D" type="Sprite2D" parent="PlayerController"]
+texture = ExtResource("1_eesjv")
