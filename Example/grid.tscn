@@ -10,7 +10,8 @@
 transform = Transform3D(1, 0, 0, 0, 0.869003, 0.494807, 0, -0.494807, 0.869003, 0.27785, 1.69384, 4.34033)
 current = true
 
-[node name="MouseInput" type="MouseInput" parent="."]
+[node name="MouseInput" type="MouseInput" parent="." node_paths=PackedStringArray("camera")]
+camera = NodePath("../Camera")
 transform = Transform3D(1, 0, 0, 0, 1, 6.78361e-09, 0, -4.05365e-10, 1, 0, -1.19209e-07, 0)
 
 [node name="CharacterBody3D" type="CharacterBody3D" parent="."]

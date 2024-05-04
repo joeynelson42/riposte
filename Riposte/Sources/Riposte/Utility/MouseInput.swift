@@ -26,8 +26,8 @@ import SwiftGodot
 
 @Godot
 class MouseInput: Node3D {
-//    @SceneTree(path: "/Root") var rootNode: Node3D?
-    @SceneTree(path: "Root/Camera") var camera: Camera3D?
+    @Export(.nodeType, "Camera3D")
+    var camera: Camera3D? = nil
     
     override func _ready() {
         
