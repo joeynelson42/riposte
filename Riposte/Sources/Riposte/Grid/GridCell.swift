@@ -9,6 +9,8 @@ import Foundation
 import SwiftGodot
 
 @Godot
-class GridCell: CharacterBody3D {
+class GridCell: StaticBody3D {
+    
+    
     
 }
