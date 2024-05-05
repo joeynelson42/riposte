@@ -1,17 +1,90 @@
 [gd_scene load_steps=2 format=3 uid="uid://dx7bsrw2b07kq"]
 
-[ext_resource type="PackedScene" uid="uid://cvvvcq81qvxty" path="res://GridCell.tscn" id="1_w0p7d"]
+[ext_resource type="PackedScene" uid="uid://duyvv0shbyt18" path="res://grid_cell.tscn" id="1_aiva8"]
 
 [node name="Root" type="Node3D"]
 
 [node name="Camera" type="Camera3D" parent="."]
-transform = Transform3D(0.648651, -0.37659, 0.661386, 3.532e-17, 0.869003, 0.494807, -0.761086, -0.320957, 0.56368, 5.0601, 1.69384, 3.6545)
+transform = Transform3D(0.707107, -0.353553, 0.612372, 3.02058e-16, 0.866025, 0.5, -0.707107, -0.353553, 0.612372, 5.19943, 2.47425, 5.13163)
 projection = 1
 current = true
 size = 5.0
 
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 0.799622, 0.600504, 0, -0.600504, 0.799622, 0, 4.0851, 0)
 
-[node name="Grid" type="Grid" parent="."]
+[node name="StrategyGrid" type="StrategyGrid" parent="."]
 
-[node name="Cell" parent="Grid" instance=ExtResource("1_w0p7d")]
+[node name="GridCell" parent="StrategyGrid" instance=ExtResource("1_aiva8")]
+
+[node name="GridCell2" parent="StrategyGrid" instance=ExtResource("1_aiva8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 2.08165e-12, 0.5)
+
+[node name="GridCell3" parent="StrategyGrid" instance=ExtResource("1_aiva8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 2.08165e-12, 0.5)
+
+[node name="GridCell4" parent="StrategyGrid" instance=ExtResource("1_aiva8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.5, 2.08165e-12, 0.5)
+
+[node name="GridCell5" parent="StrategyGrid" instance=ExtResource("1_aiva8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 2.08165e-12, 0.5)
+
+[node name="GridCell6" parent="StrategyGrid" instance=ExtResource("1_aiva8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 2.08165e-12, 1.5)
+
+[node name="GridCell7" parent="StrategyGrid" instance=ExtResource("1_aiva8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 2.08165e-12, 1.5)
+
+[node name="GridCell8" parent="StrategyGrid" instance=ExtResource("1_aiva8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 2.08165e-12, 1.5)
+
+[node name="GridCell9" parent="StrategyGrid" instance=ExtResource("1_aiva8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.5, 2.08165e-12, 1.5)
+
+[node name="GridCell10" parent="StrategyGrid" instance=ExtResource("1_aiva8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 2.08165e-12, 1.5)
+
+[node name="GridCell11" parent="StrategyGrid" instance=ExtResource("1_aiva8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 2.08165e-12, 2.5)
+
+[node name="GridCell12" parent="StrategyGrid" instance=ExtResource("1_aiva8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 2.08165e-12, 2.5)
+
+[node name="GridCell13" parent="StrategyGrid" instance=ExtResource("1_aiva8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 2.08165e-12, 2.5)
+
+[node name="GridCell14" parent="StrategyGrid" instance=ExtResource("1_aiva8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.5, 2.08165e-12, 2.5)
+
+[node name="GridCell15" parent="StrategyGrid" instance=ExtResource("1_aiva8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 2.08165e-12, 2.5)
+
+[node name="GridCell16" parent="StrategyGrid" instance=ExtResource("1_aiva8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 2.08165e-12, 3.5)
+
+[node name="GridCell17" parent="StrategyGrid" instance=ExtResource("1_aiva8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 2.08165e-12, 3.5)
+
+[node name="GridCell18" parent="StrategyGrid" instance=ExtResource("1_aiva8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 2.08165e-12, 3.5)
+
+[node name="GridCell19" parent="StrategyGrid" instance=ExtResource("1_aiva8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.5, 2.08165e-12, 3.5)
+
+[node name="GridCell20" parent="StrategyGrid" instance=ExtResource("1_aiva8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 2.08165e-12, 3.5)
+
+[node name="GridCell21" parent="StrategyGrid" instance=ExtResource("1_aiva8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 2.08165e-12, 4.5)
+
+[node name="GridCell22" parent="StrategyGrid" instance=ExtResource("1_aiva8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 2.08165e-12, 4.5)
+
+[node name="GridCell23" parent="StrategyGrid" instance=ExtResource("1_aiva8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 2.08165e-12, 4.5)
+
+[node name="GridCell24" parent="StrategyGrid" instance=ExtResource("1_aiva8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.5, 2.08165e-12, 4.5)
+
+[node name="GridCell25" parent="StrategyGrid" instance=ExtResource("1_aiva8")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 2.08165e-12, 4.5)

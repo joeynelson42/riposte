@@ -1,3 +1,3 @@
 import SwiftGodot
 
-#initSwiftExtension(cdecl: "swift_entry_point", types: [Grid.self, GridCell.self])
+#initSwiftExtension(cdecl: "swift_entry_point", types: [StrategyGridCell.self, StrategyGrid.self])
