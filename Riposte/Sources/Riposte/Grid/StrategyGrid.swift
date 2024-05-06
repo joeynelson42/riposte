@@ -11,24 +11,28 @@ import SwiftGodot
 @Godot
 class StrategyGrid: Node3D {
     
-    private var cells: [GridIndex: StrategyGridCell] = [:]
+    private(set) var cells: [GridIndex: StrategyGridCellNode] = [:]
+    
+    private var start: GridIndex?
+    private var end: GridIndex?
     
     override func _ready() {
-        
-        do {
-            let allCells = getChildren().compactMap { $0 as? StrategyGridCell }
-            var mapper = GridCellMapper()
-            cells = try mapper.mapCellPositions(allCells)
-            GD.print("found \(cells.count) cell(s)")
-        } catch {
-            print(error)
-        }
-        
+        initialize()
         super._ready()
     }
     
+    private func initialize() {
+        do {
+            let allCells = getChildren().compactMap { $0 as? StrategyGridCellNode }
+            var mapper = GridCellMapper()
+            cells = try mapper.mapCellPositions(allCells)
+        } catch {
+            print(error)
+        }
+    }
+    
     override func _input(event: InputEvent) {
-        guard let targetNode = try? MouseInputUtil.getNodeAtMousePosition(from: self) as? StrategyGridCell,
+        guard let targetNode = try? MouseInputUtil.getNodeAtMousePosition(from: self) as? StrategyGridCellNode,
               let targetIndex = getIndex(of: targetNode)
         else { return }
         
@@ -37,6 +41,29 @@ class StrategyGrid: Node3D {
         case is InputEventMouseButton:
             if !event.isPressed() {
                 GD.print(targetIndex)
+                if start == nil {
+                    start = getIndex(of: targetNode)
+                    GD.print("set start")
+                } else if end == nil {
+                    end = getIndex(of: targetNode)
+                    GD.print("set end\n")
+                    
+                    if let start, let end {
+                        let pathNodes = cells.keys.map { StrategyGridCell(index: $0) }
+                        let pathfinder = AStarPathfinder()
+                        let startNode = StrategyGridCell(index: start)
+                        let endNode = StrategyGridCell(index: end)
+                        
+                        self.start = nil
+                        self.end = nil
+                        
+                        guard let path = pathfinder.findPath(in: pathNodes, startNode: startNode, endNode: endNode) else { return }
+                        
+                        for (index, node) in path.nodes.enumerated() {
+                            GD.print("\(index): \(node.index)")
+                        }
+                    }
+                }
             }
         case is InputEventMouseMotion:
             break
@@ -45,7 +72,7 @@ class StrategyGrid: Node3D {
         }
     }
     
-    private func getIndex(of cell: StrategyGridCell) -> GridIndex? {
+    private func getIndex(of cell: StrategyGridCellNode) -> GridIndex? {
         return cells.first(where: { $0.value.id == cell.id })?.key
     }
 }
@@ -57,23 +84,25 @@ private struct GridCellMapper {
         case rootNodeNotFound
     }
     
-    private var queue = [StrategyGridCell]()
+    private var queue = [StrategyGridCellNode]()
     
-    private var positions = [GridIndex: StrategyGridCell]()
+    private var positions = [GridIndex: StrategyGridCellNode]()
     
-    mutating func mapCellPositions(_ cells: [StrategyGridCell]) throws -> [GridIndex: StrategyGridCell] {
+    mutating func mapCellPositions(_ cells: [StrategyGridCellNode]) throws -> [GridIndex: StrategyGridCellNode] {
         let root = try getRootCell(in: cells)
-        var queue = [StrategyGridCell]()
+        var queue = [StrategyGridCellNode]()
         positions[GridIndex(x: 0, y: 0)] = root
         
         queue.append(root)
         evaluateCell(root)
         
+        GD.print("Mapped \(cells.count) cell(s)")
+        
         return positions
     }
     
-    private func getRootCell(in cells: [StrategyGridCell]) throws -> StrategyGridCell {
-        var root: StrategyGridCell?
+    private func getRootCell(in cells: [StrategyGridCellNode]) throws -> StrategyGridCellNode {
+        var root: StrategyGridCellNode?
         
         for cell in cells {
             guard let currentRoot = root else {
@@ -92,7 +121,7 @@ private struct GridCellMapper {
         return root
     }
     
-    private mutating func evaluateCell(_ cell: StrategyGridCell) {
+    private mutating func evaluateCell(_ cell: StrategyGridCellNode) {
         evaluateNeighbor(cell, neighborDirection: Vector3.forward)
         evaluateNeighbor(cell, neighborDirection: Vector3.back)
         evaluateNeighbor(cell, neighborDirection: Vector3.right)
@@ -107,7 +136,7 @@ private struct GridCellMapper {
         }
     }
     
-    private mutating func evaluateNeighbor(_ originCell: StrategyGridCell, neighborDirection: Vector3) {
+    private mutating func evaluateNeighbor(_ originCell: StrategyGridCellNode, neighborDirection: Vector3) {
         guard let neighbor = findCellNeighbor(originCell, neighborDirection: neighborDirection),
               let originIndex = positions.first(where: { $0.value.id == originCell.id })?.key
         else { return }
@@ -118,7 +147,7 @@ private struct GridCellMapper {
         queue.append(neighbor)
     }
     
-    private func findCellNeighbor(_ originCell: StrategyGridCell, neighborDirection: Vector3) -> StrategyGridCell? {
+    private func findCellNeighbor(_ originCell: StrategyGridCellNode, neighborDirection: Vector3) -> StrategyGridCellNode? {
         
         let rayStart = originCell.globalPosition
         let rayEnd = rayStart + neighborDirection * 10
@@ -128,6 +157,6 @@ private struct GridCellMapper {
               let node = Node3D.makeOrUnwrap(collider)
         else { return nil }
         
-        return node as? StrategyGridCell
+        return node as? StrategyGridCellNode
     }
 }

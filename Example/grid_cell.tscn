@@ -6,7 +6,7 @@ size = Vector3(1, 0.1, 1)
 [sub_resource type="BoxShape3D" id="BoxShape3D_4enes"]
 size = Vector3(1, 0.1, 1)
 
-[node name="GridCell" type="StrategyGridCell"]
+[node name="GridCell" type="StrategyGridCellNode"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 2.08165e-12, 0.5)
 
 [node name="MeshInstance3D" type="MeshInstance3D" parent="."]

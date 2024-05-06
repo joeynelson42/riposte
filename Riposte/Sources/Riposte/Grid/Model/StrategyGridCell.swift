@@ -6,9 +6,9 @@
 //
 
 import Foundation
-import SwiftGodot
 
-@Godot
-class StrategyGridCell: StaticBody3D {
-    
+
+
+struct StrategyGridCell: Equatable, PathNode {
+    var index: GridIndex
 }
