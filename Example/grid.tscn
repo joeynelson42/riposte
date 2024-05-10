@@ -13,78 +13,80 @@ size = 5.0
 [node name="DirectionalLight3D" type="DirectionalLight3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 0.799622, 0.600504, 0, -0.600504, 0.799622, 0, 4.0851, 0)
 
-[node name="StrategyGrid" type="StrategyGrid" parent="."]
+[node name="StrategySceneFlow" type="StrategySceneFlow" parent="."]
 
-[node name="GridCell" parent="StrategyGrid" instance=ExtResource("1_aiva8")]
+[node name="StrategyGrid" type="StrategyGrid" parent="StrategySceneFlow"]
 
-[node name="GridCell2" parent="StrategyGrid" instance=ExtResource("1_aiva8")]
+[node name="GridCell" parent="StrategySceneFlow/StrategyGrid" instance=ExtResource("1_aiva8")]
+
+[node name="GridCell2" parent="StrategySceneFlow/StrategyGrid" instance=ExtResource("1_aiva8")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 2.08165e-12, 0.5)
 
-[node name="GridCell3" parent="StrategyGrid" instance=ExtResource("1_aiva8")]
+[node name="GridCell3" parent="StrategySceneFlow/StrategyGrid" instance=ExtResource("1_aiva8")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 2.08165e-12, 0.5)
 
-[node name="GridCell4" parent="StrategyGrid" instance=ExtResource("1_aiva8")]
+[node name="GridCell4" parent="StrategySceneFlow/StrategyGrid" instance=ExtResource("1_aiva8")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.5, 2.08165e-12, 0.5)
 
-[node name="GridCell5" parent="StrategyGrid" instance=ExtResource("1_aiva8")]
+[node name="GridCell5" parent="StrategySceneFlow/StrategyGrid" instance=ExtResource("1_aiva8")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 2.08165e-12, 0.5)
 
-[node name="GridCell6" parent="StrategyGrid" instance=ExtResource("1_aiva8")]
+[node name="GridCell6" parent="StrategySceneFlow/StrategyGrid" instance=ExtResource("1_aiva8")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 2.08165e-12, 1.5)
 
-[node name="GridCell7" parent="StrategyGrid" instance=ExtResource("1_aiva8")]
+[node name="GridCell7" parent="StrategySceneFlow/StrategyGrid" instance=ExtResource("1_aiva8")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 2.08165e-12, 1.5)
 
-[node name="GridCell8" parent="StrategyGrid" instance=ExtResource("1_aiva8")]
+[node name="GridCell8" parent="StrategySceneFlow/StrategyGrid" instance=ExtResource("1_aiva8")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 2.08165e-12, 1.5)
 
-[node name="GridCell9" parent="StrategyGrid" instance=ExtResource("1_aiva8")]
+[node name="GridCell9" parent="StrategySceneFlow/StrategyGrid" instance=ExtResource("1_aiva8")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.5, 2.08165e-12, 1.5)
 
-[node name="GridCell10" parent="StrategyGrid" instance=ExtResource("1_aiva8")]
+[node name="GridCell10" parent="StrategySceneFlow/StrategyGrid" instance=ExtResource("1_aiva8")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 2.08165e-12, 1.5)
 
-[node name="GridCell11" parent="StrategyGrid" instance=ExtResource("1_aiva8")]
+[node name="GridCell11" parent="StrategySceneFlow/StrategyGrid" instance=ExtResource("1_aiva8")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 2.08165e-12, 2.5)
 
-[node name="GridCell12" parent="StrategyGrid" instance=ExtResource("1_aiva8")]
+[node name="GridCell12" parent="StrategySceneFlow/StrategyGrid" instance=ExtResource("1_aiva8")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 2.08165e-12, 2.5)
 
-[node name="GridCell13" parent="StrategyGrid" instance=ExtResource("1_aiva8")]
+[node name="GridCell13" parent="StrategySceneFlow/StrategyGrid" instance=ExtResource("1_aiva8")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 2.08165e-12, 2.5)
 
-[node name="GridCell14" parent="StrategyGrid" instance=ExtResource("1_aiva8")]
+[node name="GridCell14" parent="StrategySceneFlow/StrategyGrid" instance=ExtResource("1_aiva8")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.5, 2.08165e-12, 2.5)
 
-[node name="GridCell15" parent="StrategyGrid" instance=ExtResource("1_aiva8")]
+[node name="GridCell15" parent="StrategySceneFlow/StrategyGrid" instance=ExtResource("1_aiva8")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 2.08165e-12, 2.5)
 
-[node name="GridCell16" parent="StrategyGrid" instance=ExtResource("1_aiva8")]
+[node name="GridCell16" parent="StrategySceneFlow/StrategyGrid" instance=ExtResource("1_aiva8")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 2.08165e-12, 3.5)
 
-[node name="GridCell17" parent="StrategyGrid" instance=ExtResource("1_aiva8")]
+[node name="GridCell17" parent="StrategySceneFlow/StrategyGrid" instance=ExtResource("1_aiva8")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 2.08165e-12, 3.5)
 
-[node name="GridCell18" parent="StrategyGrid" instance=ExtResource("1_aiva8")]
+[node name="GridCell18" parent="StrategySceneFlow/StrategyGrid" instance=ExtResource("1_aiva8")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 2.08165e-12, 3.5)
 
-[node name="GridCell19" parent="StrategyGrid" instance=ExtResource("1_aiva8")]
+[node name="GridCell19" parent="StrategySceneFlow/StrategyGrid" instance=ExtResource("1_aiva8")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.5, 2.08165e-12, 3.5)
 
-[node name="GridCell20" parent="StrategyGrid" instance=ExtResource("1_aiva8")]
+[node name="GridCell20" parent="StrategySceneFlow/StrategyGrid" instance=ExtResource("1_aiva8")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 2.08165e-12, 3.5)
 
-[node name="GridCell21" parent="StrategyGrid" instance=ExtResource("1_aiva8")]
+[node name="GridCell21" parent="StrategySceneFlow/StrategyGrid" instance=ExtResource("1_aiva8")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 2.08165e-12, 4.5)
 
-[node name="GridCell22" parent="StrategyGrid" instance=ExtResource("1_aiva8")]
+[node name="GridCell22" parent="StrategySceneFlow/StrategyGrid" instance=ExtResource("1_aiva8")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.5, 2.08165e-12, 4.5)
 
-[node name="GridCell23" parent="StrategyGrid" instance=ExtResource("1_aiva8")]
+[node name="GridCell23" parent="StrategySceneFlow/StrategyGrid" instance=ExtResource("1_aiva8")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.5, 2.08165e-12, 4.5)
 
-[node name="GridCell24" parent="StrategyGrid" instance=ExtResource("1_aiva8")]
+[node name="GridCell24" parent="StrategySceneFlow/StrategyGrid" instance=ExtResource("1_aiva8")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.5, 2.08165e-12, 4.5)
 
-[node name="GridCell25" parent="StrategyGrid" instance=ExtResource("1_aiva8")]
+[node name="GridCell25" parent="StrategySceneFlow/StrategyGrid" instance=ExtResource("1_aiva8")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 2.08165e-12, 4.5)

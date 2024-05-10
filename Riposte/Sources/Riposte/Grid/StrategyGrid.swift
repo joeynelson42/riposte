@@ -9,7 +9,15 @@ import Foundation
 import SwiftGodot
 
 @Godot
-class StrategyGrid: Node3D {
+class StrategyGrid: Node3D, SceneNode {
+    
+    typealias Store = StrategyGridStore
+    
+    var store: Store? {
+        didSet {
+            setupBindings()
+        }
+    }
     
     private(set) var cells: [GridIndex: StrategyGridCellNode] = [:]
     
@@ -27,7 +35,16 @@ class StrategyGrid: Node3D {
             var mapper = GridCellMapper()
             cells = try mapper.mapCellPositions(allCells)
         } catch {
-            print(error)
+            GD.print(error)
+        }
+    }
+    
+    private func setupBindings() {
+        guard let store else { return }
+        
+        store.observeState(\.clickedNode) { old, node in
+            guard let node else { return }
+            GD.print("Observed that \(node) was clicked.")
         }
     }
     
@@ -40,30 +57,31 @@ class StrategyGrid: Node3D {
         switch event {
         case is InputEventMouseButton:
             if !event.isPressed() {
-                GD.print(targetIndex)
-                if start == nil {
-                    start = getIndex(of: targetNode)
-                    GD.print("set start")
-                } else if end == nil {
-                    end = getIndex(of: targetNode)
-                    GD.print("set end\n")
-                    
-                    if let start, let end {
-                        let pathNodes = cells.keys.map { StrategyGridCell(index: $0) }
-                        let pathfinder = AStarPathfinder()
-                        let startNode = StrategyGridCell(index: start)
-                        let endNode = StrategyGridCell(index: end)
-                        
-                        self.start = nil
-                        self.end = nil
-                        
-                        guard let path = pathfinder.findPath(in: pathNodes, startNode: startNode, endNode: endNode) else { return }
-                        
-                        for (index, node) in path.nodes.enumerated() {
-                            GD.print("\(index): \(node.index)")
-                        }
-                    }
-                }
+                store?.dispatchAction(.didClickNode(targetNode))
+//                GD.print(targetIndex)
+//                if start == nil {
+//                    start = getIndex(of: targetNode)
+//                    GD.print("set start")
+//                } else if end == nil {
+//                    end = getIndex(of: targetNode)
+//                    GD.print("set end\n")
+//                    
+//                    if let start, let end {
+//                        let pathNodes = cells.keys.map { StrategyGridCell(index: $0) }
+//                        let pathfinder = AStarPathfinder()
+//                        let startNode = StrategyGridCell(index: start)
+//                        let endNode = StrategyGridCell(index: end)
+//                        
+//                        self.start = nil
+//                        self.end = nil
+//                        
+//                        guard let path = pathfinder.findPath(in: pathNodes, startNode: startNode, endNode: endNode) else { return }
+//                        
+//                        for (index, node) in path.nodes.enumerated() {
+//                            GD.print("\(index): \(node.index)")
+//                        }
+//                    }
+//                }
             }
         case is InputEventMouseMotion:
             break
