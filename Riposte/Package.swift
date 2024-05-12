@@ -14,7 +14,8 @@ let package = Package(
             targets: ["Riposte"]),
     ],
     dependencies: [
-        .package(url: "https://github.com/migueldeicaza/SwiftGodot", branch: "main")
+        .package(url: "https://github.com/migueldeicaza/SwiftGodot", branch: "main"),
+        .package(url: "https://github.com/joeynelson42/GDLasso", branch: "main")
     ],
     targets: [
         // Targets are the basic building blocks of a package, defining a module or a test suite.
@@ -23,6 +24,7 @@ let package = Package(
             name: "Riposte",
             dependencies: [
                 "SwiftGodot",
+                "GDLasso"
             ],
             swiftSettings: [.unsafeFlags(["-suppress-warnings"])]
         ),

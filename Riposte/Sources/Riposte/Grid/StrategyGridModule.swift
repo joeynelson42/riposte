@@ -1,5 +1,5 @@
 //
-//  File.swift
+//  StrategyGridModule.swift
 //  
 //
 //  Created by Joey Nelson on 5/10/24.
@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftGodot
+import GDLasso
 
 struct StrategyGridModule: SceneModule {
     
@@ -14,18 +15,24 @@ struct StrategyGridModule: SceneModule {
         var clickedNode: Node3D?
     }
     
-    enum Action {
+    enum ExternalAction {}
+    
+    enum InternalAction {
         case didClickNode(Node3D)
     }
     
     enum Output {}
 }
 
-class StrategyGridStore: SceneStore<StrategyGridModule> {
-    override func handleAction(_ action: SceneStore<StrategyGridModule>.Action) {
-        switch action {
+class StrategyGridStore: GDLassoStore<StrategyGridModule> {
+    override func handleAction(_ internalaAction: GDLassoStore<StrategyGridModule>.InternalAction) {
+        switch internalaAction {
         case .didClickNode(let node):
             update { $0.clickedNode = node }
         }
+    }
+    
+    override func handleAction(_ externalAction: GDLassoStore<StrategyGridModule>.ExternalAction) {
+        
     }
 }

@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftGodot
+import GDLasso
 
 @Godot
 class StrategyGrid: Node3D, SceneNode {

@@ -1,6 +1,15 @@
 {
   "pins" : [
     {
+      "identity" : "gdlasso",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/joeynelson42/GDLasso",
+      "state" : {
+        "branch" : "main",
+        "revision" : "0c505c481630316b623d7b9e773279817b72e0f3"
+      }
+    },
+    {
       "identity" : "swift-syntax",
       "kind" : "remoteSourceControl",
       "location" : "https://github.com/apple/swift-syntax",
