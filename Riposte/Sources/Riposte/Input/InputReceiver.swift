@@ -9,6 +9,7 @@ import Foundation
 import GDLasso
 import SwiftGodot
 
+@Godot
 class InputReceiver: Node3D, SceneNode {
     
     var store: InputReceiverModule.NodeStore?

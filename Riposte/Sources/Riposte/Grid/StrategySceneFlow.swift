@@ -13,8 +13,10 @@ import GDLasso
 class StrategySceneFlow: Node3D, SceneFlow {
     
     @SceneTree(path: "StrategyGrid") private var grid: StrategyGrid?
+    @SceneTree(path: "InputReceiver") private var inputReceiver: InputReceiver?
     
     private let gridStore = StrategyGridStore(with: .init())
+    private let inputStore = InputReceiverStore(with: .init())
     
     override func _ready() {
         grid?.set(store: gridStore.asNodeStore())
@@ -23,6 +25,23 @@ class StrategySceneFlow: Node3D, SceneFlow {
             GD.print("Grid is null.")
         }
         
+        inputReceiver?.set(store: inputStore.asNodeStore())
+        inputStore.observeOutput(observeInputReciverOutput(_:))
+        
         super._ready()
+    }
+    
+    private func observeInputReciverOutput(_ output: GDLassoStore<InputReceiverModule>.Output) {
+        switch output {
+        case .didReceiveInput(let inputType):
+            switch inputType {
+            case .mouseClick(let event):
+                GD.print(event.asText())
+            case .mouseMotion(let event):
+                GD.print(event.asText())
+            case .move(direction: let direction, let event):
+                GD.print(event.asText())
+            }
+        }
     }
 }
