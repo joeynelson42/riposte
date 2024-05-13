@@ -1,10 +1,18 @@
-[gd_scene load_steps=3 format=3 uid="uid://duyvv0shbyt18"]
+[gd_scene load_steps=5 format=3 uid="uid://duyvv0shbyt18"]
 
 [sub_resource type="BoxMesh" id="BoxMesh_sri4f"]
-size = Vector3(1, 0.1, 1)
+size = Vector3(0.925, 0.1, 0.925)
 
 [sub_resource type="BoxShape3D" id="BoxShape3D_4enes"]
 size = Vector3(1, 0.1, 1)
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_2ijgj"]
+albedo_color = Color(1, 0, 1, 1)
+
+[sub_resource type="SphereMesh" id="SphereMesh_isd8f"]
+material = SubResource("StandardMaterial3D_2ijgj")
+radius = 0.1
+height = 0.2
 
 [node name="GridCell" type="StrategyGridCellNode"]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.5, 2.08165e-12, 0.5)
@@ -14,3 +22,8 @@ mesh = SubResource("BoxMesh_sri4f")
 
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 shape = SubResource("BoxShape3D_4enes")
+
+[node name="PathIndicator" type="MeshInstance3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0585439, 0)
+visible = false
+mesh = SubResource("SphereMesh_isd8f")

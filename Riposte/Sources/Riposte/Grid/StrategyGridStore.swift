@@ -25,8 +25,16 @@ class StrategyGridStore: GDLassoStore<StrategyGridModule> {
     }
     
     private func handleDidClickCell(_ cellNode: StrategyGridCellNode) {
-        guard let gridIndex = getGridIndex(for: cellNode) else { return }
+        guard let gridIndex = state.gridMap.getIndexFor(cell: cellNode) else { return }
         GD.print("Did click cell at \(gridIndex)")
+        
+        if !state.start.isNull && !state.end.isNull {
+            update { state in
+                state.start = nil
+                state.end = nil
+                state.currentPath = nil
+            }
+        }
         
         if state.start.isNull {
             update { $0.start = gridIndex }
@@ -39,33 +47,25 @@ class StrategyGridStore: GDLassoStore<StrategyGridModule> {
                 GD.print("\(index): \(node.index)")
             }
             
-            update { state in
-                state.start = nil
-                state.end = nil
-            }
+            update { $0.currentPath = path }
         }
     }
     
     private func initializeGridCells(_ nodes: [StrategyGridCellNode]) {
         do {
             var mapper = GridCellMapper()
-            let cells = try mapper.mapCellPositions(nodes)
-            update { $0.cells = cells }
+            let map = try mapper.mapCellPositions(nodes)
+            update { $0.gridMap = map }
         } catch {
             GD.print(error)
         }
     }
     
-    private func getGridIndex(for cell: StrategyGridCellNode) -> GridIndex? {
-        return state.cells.first(where: { $0.value == cell })?.key
-    }
-    
     private func findPathBetween(start: GridIndex, end: GridIndex) -> Path? {
-        let pathNodes = state.cells.keys.map { StrategyGridCell(index: $0) }
         let pathfinder = AStarPathfinder()
         let startNode = StrategyGridCell(index: start)
         let endNode = StrategyGridCell(index: end)
-        return pathfinder.findPath(in: pathNodes, startNode: startNode, endNode: endNode)
+        return pathfinder.findPath(in: state.gridMap.pathNodes, startNode: startNode, endNode: endNode)
     }
 }
 
@@ -80,7 +80,7 @@ private struct GridCellMapper {
     
     private var positions = [GridIndex: StrategyGridCellNode]()
     
-    mutating func mapCellPositions(_ cells: [StrategyGridCellNode]) throws -> [GridIndex: StrategyGridCellNode] {
+    mutating func mapCellPositions(_ cells: [StrategyGridCellNode]) throws -> StrategyGridMap {
         let root = try getRootCell(in: cells)
         var queue = [StrategyGridCellNode]()
         positions[GridIndex(x: 0, y: 0)] = root
@@ -90,7 +90,7 @@ private struct GridCellMapper {
         
         GD.print("Mapped \(cells.count) cell(s)")
         
-        return positions
+        return StrategyGridMap(cells: positions)
     }
     
     private func getRootCell(in cells: [StrategyGridCellNode]) throws -> StrategyGridCellNode {
@@ -152,48 +152,3 @@ private struct GridCellMapper {
         return node as? StrategyGridCellNode
     }
 }
-
-
-/*
- override func _input(event: InputEvent) {
-     guard let targetNode = try? MouseInputUtil.getNodeAtMousePosition(from: self) as? StrategyGridCellNode,
-           let targetIndex = getIndex(of: targetNode)
-     else { return }
-     
-     
-     switch event {
-     case is InputEventMouseButton:
-         if !event.isPressed() {
-             store?.dispatchInternalAction(.didClickNode(targetNode))
-//                GD.print(targetIndex)
-//                if start == nil {
-//                    start = getIndex(of: targetNode)
-//                    GD.print("set start")
-//                } else if end == nil {
-//                    end = getIndex(of: targetNode)
-//                    GD.print("set end\n")
-//
-                    if let start, let end {
-                        let pathNodes = cells.keys.map { StrategyGridCell(index: $0) }
-                        let pathfinder = AStarPathfinder()
-                        let startNode = StrategyGridCell(index: start)
-                        let endNode = StrategyGridCell(index: end)
-
-                        self.start = nil
-                        self.end = nil
-
-                        guard let path = pathfinder.findPath(in: pathNodes, startNode: startNode, endNode: endNode) else { return }
-
-                        for (index, node) in path.nodes.enumerated() {
-                            GD.print("\(index): \(node.index)")
-                        }
-                    }
-//                }
-         }
-     case is InputEventMouseMotion:
-         break
-     default:
-         return
-     }
- }
- */

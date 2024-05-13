@@ -12,10 +12,12 @@ import GDLasso
 struct StrategyGridModule: SceneModule {
     
     struct State {
-        var cells: [GridIndex: StrategyGridCellNode] = [:]
+        var gridMap = StrategyGridMap()
         
         var start: GridIndex?
         var end: GridIndex?
+        
+        var currentPath: Path?
     }
     
     enum ExternalAction {
