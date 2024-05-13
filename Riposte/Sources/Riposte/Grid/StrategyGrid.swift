@@ -12,13 +12,7 @@ import GDLasso
 @Godot
 class StrategyGrid: Node3D, SceneNode {
     
-    typealias Store = StrategyGridStore
-    
-    var store: Store? {
-        didSet {
-            setupBindings()
-        }
-    }
+    var store: StrategyGridModule.NodeStore?
     
     private(set) var cells: [GridIndex: StrategyGridCellNode] = [:]
     
@@ -40,7 +34,7 @@ class StrategyGrid: Node3D, SceneNode {
         }
     }
     
-    private func setupBindings() {
+    func setUpObservations() {
         guard let store else { return }
         
         store.observeState(\.clickedNode) { old, node in
@@ -58,7 +52,7 @@ class StrategyGrid: Node3D, SceneNode {
         switch event {
         case is InputEventMouseButton:
             if !event.isPressed() {
-                store?.dispatchAction(.didClickNode(targetNode))
+                store?.dispatchInternalAction(.didClickNode(targetNode))
 //                GD.print(targetIndex)
 //                if start == nil {
 //                    start = getIndex(of: targetNode)

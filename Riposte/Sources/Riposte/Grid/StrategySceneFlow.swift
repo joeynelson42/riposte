@@ -12,18 +12,15 @@ import GDLasso
 @Godot
 class StrategySceneFlow: Node3D, SceneFlow {
     
-    var grid: StrategyGrid?
+    @SceneTree(path: "StrategyGrid") var grid: StrategyGrid?
     
     var gridStore = StrategyGridStore(with: .init())
     
     override func _ready() {
-        for child in getChildren() {
-            if let child = child as? StrategyGrid {
-                child.store = gridStore
-                GD.print("Found grid. Set store.")
-            }
+        if var grid {
+            grid.set(store: gridStore.asNodeStore())
+            GD.print("Set Grid Store")
         }
-        
         super._ready()
     }
 }
