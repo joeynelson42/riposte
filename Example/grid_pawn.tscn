@@ -1,0 +1,24 @@
+[gd_scene load_steps=4 format=3 uid="uid://ce8ru1y7o62ld"]
+
+[sub_resource type="StandardMaterial3D" id="StandardMaterial3D_5woqu"]
+albedo_color = Color(1, 0, 0, 1)
+
+[sub_resource type="CapsuleMesh" id="CapsuleMesh_ndxhw"]
+material = SubResource("StandardMaterial3D_5woqu")
+radius = 0.25
+height = 1.0
+
+[sub_resource type="CapsuleShape3D" id="CapsuleShape3D_52ato"]
+radius = 0.25
+height = 1.0
+
+[node name="StrategyGridPawnNode" type="StrategyGridPawnNode"]
+
+[node name="StaticBody3D" type="StaticBody3D" parent="."]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 2.08165e-12, 0.5, 2.08165e-12)
+
+[node name="MeshInstance3D" type="MeshInstance3D" parent="StaticBody3D"]
+mesh = SubResource("CapsuleMesh_ndxhw")
+
+[node name="CollisionShape3D" type="CollisionShape3D" parent="StaticBody3D"]
+shape = SubResource("CapsuleShape3D_52ato")

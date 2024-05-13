@@ -1,6 +1,7 @@
-[gd_scene load_steps=2 format=3 uid="uid://dx7bsrw2b07kq"]
+[gd_scene load_steps=3 format=3 uid="uid://dx7bsrw2b07kq"]
 
 [ext_resource type="PackedScene" uid="uid://duyvv0shbyt18" path="res://grid_cell.tscn" id="1_aiva8"]
+[ext_resource type="PackedScene" uid="uid://ce8ru1y7o62ld" path="res://grid_pawn.tscn" id="2_hm4v2"]
 
 [node name="Root" type="Node3D"]
 
@@ -90,5 +91,8 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.5, 2.08165e-12, 4.5)
 
 [node name="GridCell25" parent="StrategySceneFlow/StrategyGrid" instance=ExtResource("1_aiva8")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 2.08165e-12, 4.5)
+
+[node name="StrategyGridPawnNode" parent="StrategySceneFlow/StrategyGrid" instance=ExtResource("2_hm4v2")]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.502308, 0.0513873, 0.390915)
 
 [node name="InputReceiver" type="InputReceiver" parent="StrategySceneFlow"]

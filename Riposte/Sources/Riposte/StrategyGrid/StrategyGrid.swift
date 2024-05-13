@@ -14,10 +14,6 @@ class StrategyGrid: Node3D, SceneNode {
     
     var store: StrategyGridModule.NodeStore?
     
-    override func _ready() {
-        super._ready()
-    }
-    
     private func updatePathIndicators() {
         guard let gridMap = state?.gridMap else { return }
         
@@ -42,7 +38,8 @@ class StrategyGrid: Node3D, SceneNode {
     
     func setUpObservations() {
         let allCells = getChildren().compactMap { $0 as? StrategyGridCellNode }
-        dispatchInternalAction(.onReady(gridCells: allCells))
+        let allPawns = getChildren().compactMap { $0 as? StrategyGridPawnNode }
+        dispatchInternalAction(.onReady(gridCells: allCells, pawns: allPawns))
         
         store?.observeState(\.start, handler: { [weak self] index in
             self?.updatePathIndicators()
@@ -55,5 +52,21 @@ class StrategyGrid: Node3D, SceneNode {
         store?.observeState(\.currentPath, handler: { [weak self] index in
             self?.updatePathIndicators()
         })
+        
+        store?.observeState(\.gridMap, handler: { [weak self] _ in
+            self?.snapPawnsToGrid()
+        })
+    }
+    
+    /// Moves pawns to the center of their corresponding grid cell on the x,z plane
+    private func snapPawnsToGrid() {
+        guard let gridMap = state?.gridMap else { return }
+        for pawn in gridMap.pawnNodes {
+            guard let index = gridMap.getIndexFor(pawn: pawn),
+                  let cell = gridMap.getCellAtIndex(index)
+            else { continue }
+            
+            pawn.globalPosition = Vector3(x: cell.globalPosition.x, y: pawn.globalPosition.y, z: cell.globalPosition.z)
+        }
     }
 }
