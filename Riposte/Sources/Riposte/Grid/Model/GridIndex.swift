@@ -29,6 +29,16 @@ struct GridIndex: Hashable {
     var x: Int
     var y: Int
     
+    init(x: Int, y: Int) {
+        self.x = x
+        self.y = y
+    }
+    
+    init() {
+        x = 0
+        y = 0
+    }
+    
     static func +(lhs: GridIndex, rhs: GridIndex) -> GridIndex {
         return GridIndex(x: lhs.x + rhs.x, y: lhs.y + rhs.y)
     }

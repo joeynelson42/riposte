@@ -7,8 +7,6 @@
 
 import Foundation
 
-
-
 struct StrategyGridCell: Equatable, PathNode {
     var index: GridIndex
 }

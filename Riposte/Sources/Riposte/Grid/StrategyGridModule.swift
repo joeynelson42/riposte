@@ -12,27 +12,20 @@ import GDLasso
 struct StrategyGridModule: SceneModule {
     
     struct State {
-        var clickedNode: Node3D?
+        var cells: [GridIndex: StrategyGridCellNode] = [:]
+        
+        var start: GridIndex?
+        var end: GridIndex?
     }
     
-    enum ExternalAction {}
+    enum ExternalAction {
+        case didClickCell(StrategyGridCellNode)
+    }
     
     enum InternalAction {
-        case didClickNode(Node3D)
+        case onReady(gridCells: [StrategyGridCellNode])
     }
     
     enum Output {}
 }
 
-class StrategyGridStore: GDLassoStore<StrategyGridModule> {
-    override func handleAction(_ internalaAction: GDLassoStore<StrategyGridModule>.InternalAction) {
-        switch internalaAction {
-        case .didClickNode(let node):
-            update { $0.clickedNode = node }
-        }
-    }
-    
-    override func handleAction(_ externalAction: GDLassoStore<StrategyGridModule>.ExternalAction) {
-        
-    }
-}

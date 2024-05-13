@@ -36,12 +36,21 @@ class StrategySceneFlow: Node3D, SceneFlow {
         case .didReceiveInput(let inputType):
             switch inputType {
             case .mouseClick(let event):
-                GD.print(event.asText())
+                handleMouseClick(event: event)
             case .mouseMotion(let event):
-                GD.print(event.asText())
+                handleMouseMotion(event: event)
             case .move(direction: let direction, let event):
                 GD.print(event.asText())
             }
         }
+    }
+    
+    private func handleMouseClick(event: InputEvent) {
+        guard event.isReleased(), let targetNode = try? MouseInputUtil.getNodeAtMousePosition(from: self) as? StrategyGridCellNode else { return }
+        gridStore.dispatchExternalAction(.didClickCell(targetNode))
+    }
+    
+    private func handleMouseMotion(event: InputEvent) {
+        
     }
 }
