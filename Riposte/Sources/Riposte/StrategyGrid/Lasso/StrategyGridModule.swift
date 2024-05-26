@@ -16,10 +16,10 @@ struct StrategyGridModule: SceneModule {
         
         var start: GridIndex?
         var end: GridIndex?
+        var currentPath: Path?
         
         var hovered: StrategyGridCell?
-        
-        var currentPath: Path?
+        var hoveredPath: Path?
     }
     
     enum ExternalAction {

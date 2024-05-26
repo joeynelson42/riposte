@@ -24,10 +24,15 @@ class StrategyGrid: Node3D, SceneNode {
         
         if let end = state?.end, let node = gridMap.getCellAtIndex(end) {
             visibleNodes.append(node)
+        } else if let hoveredCell = state?.hovered {
+            visibleNodes.append(hoveredCell)
         }
         
         if let path = state?.currentPath {
             let pathNodes = path.nodes.compactMap { gridMap.getCellAtIndex($0.index) }
+            visibleNodes.append(contentsOf: pathNodes)
+        } else if let hoveredPath = state?.hoveredPath {
+            let pathNodes = hoveredPath.nodes.compactMap { gridMap.getCellAtIndex($0.index) }
             visibleNodes.append(contentsOf: pathNodes)
         }
         

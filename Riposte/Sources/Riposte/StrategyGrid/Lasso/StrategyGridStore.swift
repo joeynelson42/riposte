@@ -64,10 +64,20 @@ class StrategyGridStore: GDLassoStore<StrategyGridModule> {
     
     private func handleDidHoverCell(_ cell: StrategyGridCell) {
         update { $0.hovered = cell }
+        
+        guard let start = state.start, 
+              let hoveredIndex = state.gridMap.getIndexFor(cell: cell),
+              let hoveredPath = findPathBetween(start: start, end: hoveredIndex)
+        else { return }
+        
+        update { $0.hoveredPath = hoveredPath }
     }
     
     private func handleDidEndHovering() {
-        update { $0.hovered = nil }
+        update {
+            $0.hovered = nil
+            $0.hoveredPath = nil
+        }
     }
     
     private func initializeGridMap(cells: [any StrategyGridCell], pawns: [any StrategyGridPawn]) {
