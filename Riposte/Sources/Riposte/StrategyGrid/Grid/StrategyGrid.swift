@@ -37,8 +37,8 @@ class StrategyGrid: Node3D, SceneNode {
     }
     
     func setUpObservations() {
-        let allCells = getChildren().compactMap { $0 as? StrategyGridCellNode }
-        let allPawns: [any StrategyGridPawn] = getChildren().compactMap { $0 as? StrategyGridPawnNode }
+        let allCells: [any StrategyGridCell] = getChildren().compactMap { $0 as? StrategyGridCell }
+        let allPawns: [any StrategyGridPawn] = getChildren().compactMap { $0 as? any StrategyGridPawn }
         
         dispatchInternalAction(.onReady(gridCells: allCells, pawns: allPawns))
         

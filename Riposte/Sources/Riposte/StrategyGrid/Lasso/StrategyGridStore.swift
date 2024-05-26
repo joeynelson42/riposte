@@ -12,20 +12,20 @@ import SwiftGodot
 class StrategyGridStore: GDLassoStore<StrategyGridModule> {
     override func handleAction(_ internalaAction: GDLassoStore<StrategyGridModule>.InternalAction) {
         switch internalaAction {
-        case .onReady(let gridCellNodes, let pawns):
-            initializeGridMap(cells: gridCellNodes, pawns: pawns)
+        case .onReady(let cells, let pawns):
+            initializeGridMap(cells: cells, pawns: pawns)
         }
     }
     
     override func handleAction(_ externalAction: GDLassoStore<StrategyGridModule>.ExternalAction) {
         switch externalAction {
-        case .didClickCell(let cellNode):
-            handleDidClickCell(cellNode)
+        case .didClickCell(let cell):
+            handleDidClickCell(cell)
         }
     }
     
-    private func handleDidClickCell(_ cellNode: StrategyGridCellNode) {
-        guard let gridIndex = state.gridMap.getIndexFor(cell: cellNode) else { return }
+    private func handleDidClickCell(_ cell: StrategyGridCell) {
+        guard let gridIndex = state.gridMap.getIndexFor(cell: cell) else { return }
         GD.print("Did click cell at \(gridIndex)")
         
         if !state.start.isNull && !state.end.isNull {
@@ -58,7 +58,7 @@ class StrategyGridStore: GDLassoStore<StrategyGridModule> {
         }
     }
     
-    private func initializeGridMap(cells: [StrategyGridCellNode], pawns: [any StrategyGridPawn]) {
+    private func initializeGridMap(cells: [any StrategyGridCell], pawns: [any StrategyGridPawn]) {
         do {
             var mapper = GridCellMapper()
             let gridMap = try mapper.createMap(from: cells, pawns: pawns)
@@ -164,7 +164,7 @@ private struct GridCellMapper {
               let node = Node3D.makeOrUnwrap(collider)
         else { return nil }
         
-        return node as? StrategyGridCellNode
+        return node as? StrategyGridCell
     }
     
     private func findPawnsNearestIndex(pawn: any StrategyGridPawn, in cellPositions: [GridIndex: any StrategyGridCell]) -> GridIndex? {

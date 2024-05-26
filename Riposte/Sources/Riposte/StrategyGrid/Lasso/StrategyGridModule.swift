@@ -21,11 +21,11 @@ struct StrategyGridModule: SceneModule {
     }
     
     enum ExternalAction {
-        case didClickCell(StrategyGridCellNode)
+        case didClickCell(StrategyGridCell)
     }
     
     enum InternalAction {
-        case onReady(gridCells: [StrategyGridCellNode], pawns: [any StrategyGridPawn])
+        case onReady(gridCells: [StrategyGridCell], pawns: [any StrategyGridPawn])
     }
     
     enum Output {}
