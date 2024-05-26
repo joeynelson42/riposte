@@ -50,7 +50,7 @@ class StrategyGridStore: GDLassoStore<StrategyGridModule> {
             update { $0.currentPath = path }
             
             if let pawn = state.gridMap.pawnNodes.first {
-                let globalPath = GlobalPath(steps: path.nodes.compactMap { state.gridMap.getCellAtIndex($0.index)?.position })
+                let globalPath = GlobalPath(steps: path.nodes.compactMap { state.gridMap.getCellAtIndex($0.index)?.globalPosition })
                 Task {
                     await pawn.move(along: globalPath)
                 }
@@ -70,8 +70,8 @@ class StrategyGridStore: GDLassoStore<StrategyGridModule> {
     
     private func findPathBetween(start: GridIndex, end: GridIndex) -> Path? {
         let pathfinder = AStarPathfinder()
-        let startNode = StrategyGridCell(index: start)
-        let endNode = StrategyGridCell(index: end)
+        let startNode = StrategyGridCellModel(index: start)
+        let endNode = StrategyGridCellModel(index: end)
         return pathfinder.findPath(in: state.gridMap.pathNodes, startNode: startNode, endNode: endNode)
     }
 }
@@ -83,13 +83,13 @@ private struct GridCellMapper {
         case rootNodeNotFound
     }
     
-    private var queue = [StrategyGridCellNode]()
+    private var queue = [StrategyGridCell]()
     
-    private var cellPositions = [GridIndex: StrategyGridCellNode]()
+    private var cellPositions = [GridIndex: any StrategyGridCell]()
     
-    mutating func createMap(from cells: [StrategyGridCellNode], pawns: [any StrategyGridPawn]) throws -> StrategyGridMap {
+    mutating func createMap(from cells: [any StrategyGridCell], pawns: [any StrategyGridPawn]) throws -> StrategyGridMap {
         let root = try getRootCell(in: cells)
-        var queue = [StrategyGridCellNode]()
+        var queue = [StrategyGridCell]()
         cellPositions[GridIndex(x: 0, y: 0)] = root
         
         queue.append(root)
@@ -108,8 +108,8 @@ private struct GridCellMapper {
         return StrategyGridMap(cells: cellPositions, pawns: pawnPositions)
     }
     
-    private func getRootCell(in cells: [StrategyGridCellNode]) throws -> StrategyGridCellNode {
-        var root: StrategyGridCellNode?
+    private func getRootCell(in cells: [any StrategyGridCell]) throws -> any StrategyGridCell {
+        var root: StrategyGridCell?
         
         for cell in cells {
             guard let currentRoot = root else {
@@ -117,8 +117,8 @@ private struct GridCellMapper {
                 continue
             }
             
-            let cellPosValue = cell.transform.origin.x + cell.transform.origin.z
-            let currentRootPosValue = currentRoot.transform.origin.x + currentRoot.transform.origin.z
+            let cellPosValue = cell.globalPosition.x + cell.globalPosition.z
+            let currentRootPosValue = currentRoot.globalPosition.x + currentRoot.globalPosition.z
             if cellPosValue < currentRootPosValue {
                 root = cell
             }
@@ -128,13 +128,13 @@ private struct GridCellMapper {
         return root
     }
     
-    private mutating func evaluateCell(_ cell: StrategyGridCellNode) {
+    private mutating func evaluateCell(_ cell: StrategyGridCell) {
         evaluateNeighbor(cell, neighborDirection: Vector3.forward)
         evaluateNeighbor(cell, neighborDirection: Vector3.back)
         evaluateNeighbor(cell, neighborDirection: Vector3.right)
         evaluateNeighbor(cell, neighborDirection: Vector3.left)
         
-        if let index = queue.firstIndex(of: cell) {
+        if let index = queue.firstIndex(where: { $0.isEqualTo(item: cell) }) {
             queue.remove(at: index)
         }
         
@@ -143,7 +143,7 @@ private struct GridCellMapper {
         }
     }
     
-    private mutating func evaluateNeighbor(_ originCell: StrategyGridCellNode, neighborDirection: Vector3) {
+    private mutating func evaluateNeighbor(_ originCell: StrategyGridCell, neighborDirection: Vector3) {
         guard let neighbor = findCellNeighbor(originCell, neighborDirection: neighborDirection),
               let originIndex = cellPositions.first(where: { $0.value.id == originCell.id })?.key
         else { return }
@@ -154,12 +154,12 @@ private struct GridCellMapper {
         queue.append(neighbor)
     }
     
-    private func findCellNeighbor(_ originCell: StrategyGridCellNode, neighborDirection: Vector3) -> StrategyGridCellNode? {
+    private func findCellNeighbor(_ originCell: StrategyGridCell, neighborDirection: Vector3) -> StrategyGridCell? {
         
         let rayStart = originCell.globalPosition
         let rayEnd = rayStart + neighborDirection * 10
         let rayQuery = PhysicsRayQueryParameters3D.create(from: rayStart, to: rayEnd, collisionMask: 0b0001)
-        guard let result = originCell.getWorld3d()?.directSpaceState?.intersectRay(parameters: rayQuery),
+        guard let result = originCell.world3D?.directSpaceState?.intersectRay(parameters: rayQuery),
               let collider = result["collider"],
               let node = Node3D.makeOrUnwrap(collider)
         else { return nil }
@@ -167,7 +167,7 @@ private struct GridCellMapper {
         return node as? StrategyGridCellNode
     }
     
-    private func findPawnsNearestIndex(pawn: any StrategyGridPawn, in cellPositions: [GridIndex: StrategyGridCellNode]) -> GridIndex? {
+    private func findPawnsNearestIndex(pawn: any StrategyGridPawn, in cellPositions: [GridIndex: any StrategyGridCell]) -> GridIndex? {
         var lowestDiff: Double?
         var currentNearestIndex: GridIndex?
         

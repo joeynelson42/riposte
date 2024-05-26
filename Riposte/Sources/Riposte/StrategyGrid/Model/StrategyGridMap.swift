@@ -9,11 +9,11 @@ import Foundation
 import SwiftGodot
 
 struct StrategyGridMap {
-    private var cells: [GridIndex: StrategyGridCellNode]
+    private var cells: [GridIndex: StrategyGridCell]
     
     private var pawns: [GridIndex: any StrategyGridPawn]
     
-    init(cells: [GridIndex : StrategyGridCellNode], pawns: [GridIndex: any StrategyGridPawn]) {
+    init(cells: [GridIndex : StrategyGridCell], pawns: [GridIndex: any StrategyGridPawn]) {
         self.cells = cells
         self.pawns = pawns
     }
@@ -24,16 +24,16 @@ struct StrategyGridMap {
     }
     
     // MARK: Cells
-    var pathNodes: [PathNode] { cells.keys.map { StrategyGridCell(index: $0) } }
+    var pathNodes: [PathNode] { cells.keys.map { StrategyGridCellModel(index: $0) } }
     
-    var cellNodes: [StrategyGridCellNode] { Array(cells.values) }
+    var cellNodes: [StrategyGridCell] { Array(cells.values) }
     
-    func getCellAtIndex(_ index: GridIndex) -> StrategyGridCellNode? {
+    func getCellAtIndex(_ index: GridIndex) -> StrategyGridCell? {
         return cells[index]
     }
     
-    func getIndexFor(cell: StrategyGridCellNode) -> GridIndex? {
-        return cells.first(where: { $0.value == cell })?.key
+    func getIndexFor(cell: StrategyGridCell) -> GridIndex? {
+        return cells.first(where: { $0.value.isEqualTo(item: cell) })?.key
     }
     
     // MARK: Pawns

@@ -17,7 +17,7 @@ class StrategyGrid: Node3D, SceneNode {
     private func updatePathIndicators() {
         guard let gridMap = state?.gridMap else { return }
         
-        var visibleNodes = [StrategyGridCellNode]()
+        var visibleNodes = [StrategyGridCell]()
         if let start = state?.start, let node = gridMap.getCellAtIndex(start) {
             visibleNodes.append(node)
         }
@@ -32,7 +32,7 @@ class StrategyGrid: Node3D, SceneNode {
         }
         
         gridMap.cellNodes.forEach { node in
-            node.setPathIndicator(hidden: !visibleNodes.contains(node))
+            node.setPathIndicator(hidden: !visibleNodes.contains( where: { $0.isEqualTo(item: node) }))
         }
     }
     

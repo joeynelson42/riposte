@@ -7,6 +7,6 @@
 
 import Foundation
 
-struct StrategyGridCell: Equatable, PathNode {
+struct StrategyGridCellModel: Equatable, PathNode {
     var index: GridIndex
 }
