@@ -21,6 +21,10 @@ class StrategyGridStore: GDLassoStore<StrategyGridModule> {
         switch externalAction {
         case .didClickCell(let cell):
             handleDidClickCell(cell)
+        case .didHoverCell(let cell):
+            handleDidHoverCell(cell)
+        case .didEndHovering:
+            break
         }
     }
     
@@ -56,6 +60,14 @@ class StrategyGridStore: GDLassoStore<StrategyGridModule> {
                 }
             }
         }
+    }
+    
+    private func handleDidHoverCell(_ cell: StrategyGridCell) {
+        update { $0.hovered = cell }
+    }
+    
+    private func handleDidEndHovering() {
+        update { $0.hovered = nil }
     }
     
     private func initializeGridMap(cells: [any StrategyGridCell], pawns: [any StrategyGridPawn]) {

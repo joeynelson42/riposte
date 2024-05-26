@@ -17,11 +17,15 @@ struct StrategyGridModule: SceneModule {
         var start: GridIndex?
         var end: GridIndex?
         
+        var hovered: StrategyGridCell?
+        
         var currentPath: Path?
     }
     
     enum ExternalAction {
         case didClickCell(StrategyGridCell)
+        case didHoverCell(StrategyGridCell)
+        case didEndHovering
     }
     
     enum InternalAction {

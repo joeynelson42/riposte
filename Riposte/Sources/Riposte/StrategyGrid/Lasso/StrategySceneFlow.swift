@@ -51,6 +51,7 @@ class StrategySceneFlow: Node3D, SceneFlow {
     }
     
     private func handleMouseMotion(event: InputEvent) {
-        
+        guard let targetNode = try? MouseInputUtil.getNodeAtMousePosition(from: self) as? StrategyGridCell else { return }
+        gridStore.dispatchExternalAction(.didHoverCell(targetNode))
     }
 }

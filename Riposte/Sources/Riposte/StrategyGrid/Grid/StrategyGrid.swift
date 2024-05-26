@@ -42,21 +42,26 @@ class StrategyGrid: Node3D, SceneNode {
         
         dispatchInternalAction(.onReady(gridCells: allCells, pawns: allPawns))
         
-        store?.observeState(\.start, handler: { [weak self] index in
+        store?.observeState(\.start) { [weak self] index in
             self?.updatePathIndicators()
-        })
+        }
         
-        store?.observeState(\.end, handler: { [weak self] index in
+        store?.observeState(\.end) { [weak self] index in
             self?.updatePathIndicators()
-        })
+        }
         
-        store?.observeState(\.currentPath, handler: { [weak self] index in
+        store?.observeState(\.currentPath) { [weak self] index in
             self?.updatePathIndicators()
-        })
+        }
         
-        store?.observeState(\.gridMap, handler: { [weak self] _ in
+        store?.observeState(\.gridMap) { [weak self] _ in
             self?.snapPawnsToGrid()
-        })
+        }
+        
+        store?.observeState(\.hovered) { oldValue, newValue in
+            oldValue??.setPathIndicator(hidden: true)
+            newValue?.setPathIndicator(hidden: false)
+        }
     }
     
     /// Moves pawns to the center of their corresponding grid cell on the x,z plane
