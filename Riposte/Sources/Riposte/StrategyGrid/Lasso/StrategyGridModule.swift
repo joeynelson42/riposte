@@ -25,7 +25,7 @@ struct StrategyGridModule: SceneModule {
     }
     
     enum InternalAction {
-        case onReady(gridCells: [StrategyGridCellNode], pawns: [StrategyGridPawnNode])
+        case onReady(gridCells: [StrategyGridCellNode], pawns: [any StrategyGridPawn])
     }
     
     enum Output {}

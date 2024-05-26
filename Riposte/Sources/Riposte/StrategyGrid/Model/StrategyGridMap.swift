@@ -11,9 +11,9 @@ import SwiftGodot
 struct StrategyGridMap {
     private var cells: [GridIndex: StrategyGridCellNode]
     
-    private var pawns: [GridIndex: StrategyGridPawnNode]
+    private var pawns: [GridIndex: any StrategyGridPawn]
     
-    init(cells: [GridIndex : StrategyGridCellNode], pawns: [GridIndex: StrategyGridPawnNode]) {
+    init(cells: [GridIndex : StrategyGridCellNode], pawns: [GridIndex: any StrategyGridPawn]) {
         self.cells = cells
         self.pawns = pawns
     }
@@ -37,13 +37,13 @@ struct StrategyGridMap {
     }
     
     // MARK: Pawns
-    var pawnNodes: [StrategyGridPawnNode] { Array(pawns.values) }
+    var pawnNodes: [any StrategyGridPawn] { Array(pawns.values) }
     
-    func getPawnAtIndex(_ index: GridIndex) -> StrategyGridPawnNode? {
+    func getPawnAtIndex(_ index: GridIndex) -> (any StrategyGridPawn)? {
         return pawns[index]
     }
     
-    func getIndexFor(pawn: StrategyGridPawnNode) -> GridIndex? {
-        return pawns.first(where: { $0.value == pawn })?.key
+    func getIndexFor(pawn: any StrategyGridPawn) -> GridIndex? {
+        return pawns.first(where: { $0.value.isEqualTo(item: pawn) })?.key
     }
 }

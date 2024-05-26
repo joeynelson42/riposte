@@ -11,18 +11,17 @@ import SwiftGodot
 protocol PawnMovable {
     associatedtype Mover: PawnMover
     
-    var mover: Mover? { get set }
+    var mover: Mover { get set }
     
     func move(along path: GlobalPath) async
 }
 
-extension PawnMovable where Self:Node3D {
+extension PawnMovable where Self:CharacterBody3D {
     func move(along path: GlobalPath) async {
-        guard let mover else { return }
         return await mover.move(node: self, along: path)
     }
 }
 
 protocol PawnMover {
-    func move(node: Node3D, along path: GlobalPath) async
+    func move(node: CharacterBody3D, along path: GlobalPath) async
 }

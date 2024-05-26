@@ -38,7 +38,8 @@ class StrategyGrid: Node3D, SceneNode {
     
     func setUpObservations() {
         let allCells = getChildren().compactMap { $0 as? StrategyGridCellNode }
-        let allPawns = getChildren().compactMap { $0 as? StrategyGridPawnNode }
+        let allPawns: [any StrategyGridPawn] = getChildren().compactMap { $0 as? StrategyGridPawnNode }
+        
         dispatchInternalAction(.onReady(gridCells: allCells, pawns: allPawns))
         
         store?.observeState(\.start, handler: { [weak self] index in
@@ -66,7 +67,8 @@ class StrategyGrid: Node3D, SceneNode {
                   let cell = gridMap.getCellAtIndex(index)
             else { continue }
             
-            pawn.globalPosition = Vector3(x: cell.globalPosition.x, y: pawn.globalPosition.y, z: cell.globalPosition.z)
+            let newPos = Vector3(x: cell.globalPosition.x, y: pawn.globalPosition.y, z: cell.globalPosition.z)
+            pawn.setGlobalPosition(newPos)
         }
     }
 }

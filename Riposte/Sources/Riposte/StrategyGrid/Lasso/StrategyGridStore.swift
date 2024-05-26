@@ -58,7 +58,7 @@ class StrategyGridStore: GDLassoStore<StrategyGridModule> {
         }
     }
     
-    private func initializeGridMap(cells: [StrategyGridCellNode], pawns: [StrategyGridPawnNode]) {
+    private func initializeGridMap(cells: [StrategyGridCellNode], pawns: [any StrategyGridPawn]) {
         do {
             var mapper = GridCellMapper()
             let gridMap = try mapper.createMap(from: cells, pawns: pawns)
@@ -87,7 +87,7 @@ private struct GridCellMapper {
     
     private var cellPositions = [GridIndex: StrategyGridCellNode]()
     
-    mutating func createMap(from cells: [StrategyGridCellNode], pawns: [StrategyGridPawnNode]) throws -> StrategyGridMap {
+    mutating func createMap(from cells: [StrategyGridCellNode], pawns: [any StrategyGridPawn]) throws -> StrategyGridMap {
         let root = try getRootCell(in: cells)
         var queue = [StrategyGridCellNode]()
         cellPositions[GridIndex(x: 0, y: 0)] = root
@@ -97,7 +97,7 @@ private struct GridCellMapper {
         
         GD.print("Mapped \(cells.count) cell(s)")
         
-        var pawnPositions = [GridIndex: StrategyGridPawnNode]()
+        var pawnPositions = [GridIndex: any StrategyGridPawn]()
         pawns.forEach { pawn in
             if let pawnIndex = findPawnsNearestIndex(pawn: pawn, in: cellPositions) {
                 GD.print("Found a pawn at index: \(pawnIndex)")
@@ -167,7 +167,7 @@ private struct GridCellMapper {
         return node as? StrategyGridCellNode
     }
     
-    private func findPawnsNearestIndex(pawn: StrategyGridPawnNode, in cellPositions: [GridIndex: StrategyGridCellNode]) -> GridIndex? {
+    private func findPawnsNearestIndex(pawn: any StrategyGridPawn, in cellPositions: [GridIndex: StrategyGridCellNode]) -> GridIndex? {
         var lowestDiff: Double?
         var currentNearestIndex: GridIndex?
         
