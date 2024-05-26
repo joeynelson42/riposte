@@ -46,7 +46,7 @@ class StrategySceneFlow: Node3D, SceneFlow {
     }
     
     private func handleMouseClick(event: InputEvent) {
-        guard event.isReleased(), let targetNode = try? MouseInputUtil.getNodeAtMousePosition(from: self) as? StrategyGridCellNode else { return }
+        guard event.isReleased(), let targetNode = try? MouseInputUtil.getNodeAtMousePosition(from: self) as? StrategyGridCell else { return }
         gridStore.dispatchExternalAction(.didClickCell(targetNode))
     }
     
