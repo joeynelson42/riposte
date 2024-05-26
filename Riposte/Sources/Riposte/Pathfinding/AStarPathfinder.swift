@@ -28,7 +28,7 @@ struct AStarPathfinder: Pathfinder {
         }
     }
     
-    func findPath(in nodes: [PathNode], startNode: PathNode, endNode: PathNode) -> Path? {
+    func findPath(in nodes: [any PathNode], startNode: any PathNode, endNode: any PathNode) -> Path? {
         var aStarNodes = nodes.map { AStarNode(index: $0.index) }
         aStarNodes.forEach { $0.neighbors = findNodeNeighbors($0, nodes: aStarNodes) }
         

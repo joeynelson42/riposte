@@ -8,6 +8,6 @@
 import Foundation
 
 struct Path {
-    var nodes: [PathNode]
+    var nodes: [any PathNode]
     var cost: Int
 }

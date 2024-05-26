@@ -8,5 +8,5 @@
 import Foundation
 
 protocol Pathfinder {
-    func findPath(in nodes: [PathNode], startNode: PathNode, endNode: PathNode) -> Path?
+    func findPath(in nodes: [any PathNode], startNode: any PathNode, endNode: any PathNode) -> Path?
 }

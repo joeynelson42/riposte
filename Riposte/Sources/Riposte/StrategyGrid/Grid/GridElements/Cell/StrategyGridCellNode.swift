@@ -8,14 +8,6 @@
 import Foundation
 import SwiftGodot
 
-protocol WorldAware {
-    var world3D: World3D? { get }
-}
-
-protocol StrategyGridCell: GloballyPositioned, NodeEquatable, WorldAware {
-    func setPathIndicator(hidden: Bool)
-}
-
 @Godot
 class StrategyGridCellNode: StaticBody3D, StrategyGridCell {
     @SceneTree(path: "PathIndicator") private var pathIndicator: Node3D?

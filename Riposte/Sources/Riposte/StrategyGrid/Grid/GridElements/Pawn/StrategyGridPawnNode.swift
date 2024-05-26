@@ -8,29 +8,6 @@
 import Foundation
 import SwiftGodot
 
-protocol GloballyPositioned {
-    var globalPosition: Vector3 { get }
-    
-    func setGlobalPosition(_ position: Vector3)
-}
-
-protocol StrategyGridPawn: PawnMovable, GloballyPositioned, NodeEquatable {
-    
-}
-
-protocol NodeEquatable {
-    
-    var id: ObjectIdentifier { get }
-    
-    func isEqualTo(item: NodeEquatable) -> Bool
-}
-
-extension NodeEquatable {
-    func isEqualTo(item: NodeEquatable) -> Bool {
-        return item.id == self.id
-    }
-}
-
 @Godot
 class StrategyGridPawnNode: CharacterBody3D, StrategyGridPawn {
     

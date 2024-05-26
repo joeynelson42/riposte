@@ -24,7 +24,7 @@ struct StrategyGridMap {
     }
     
     // MARK: Cells
-    var pathNodes: [PathNode] { cells.keys.map { StrategyGridCellModel(index: $0) } }
+    var pathNodes: [any PathNode] { cells.keys.map { SimplePathNode(index: $0) } }
     
     var cellNodes: [StrategyGridCell] { Array(cells.values) }
     

@@ -7,6 +7,10 @@
 
 import Foundation
 
-protocol PathNode {
+protocol PathNode: Equatable{
     var index: GridIndex { get }
+}
+
+struct SimplePathNode: PathNode {
+    var index: GridIndex
 }

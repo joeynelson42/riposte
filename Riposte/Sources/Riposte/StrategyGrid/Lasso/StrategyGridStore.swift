@@ -70,8 +70,8 @@ class StrategyGridStore: GDLassoStore<StrategyGridModule> {
     
     private func findPathBetween(start: GridIndex, end: GridIndex) -> Path? {
         let pathfinder = AStarPathfinder()
-        let startNode = StrategyGridCellModel(index: start)
-        let endNode = StrategyGridCellModel(index: end)
+        let startNode = SimplePathNode(index: start)
+        let endNode = SimplePathNode(index: end)
         return pathfinder.findPath(in: state.gridMap.pathNodes, startNode: startNode, endNode: endNode)
     }
 }
