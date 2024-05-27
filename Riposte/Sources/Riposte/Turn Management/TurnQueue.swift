@@ -13,14 +13,12 @@ class TurnQueue {
         case queueIsExhausted
     }
     
-    // Public
     public let factionOrder: [Faction]
     
     public var activeFaction: Faction? { return activeQueue.first }
     
     public var isQueueExhausted: Bool { return activeQueue.isEmpty }
     
-    // Private
     private var activeQueue: [Faction]
     
     private var exhaustedQueue: [Faction] = []

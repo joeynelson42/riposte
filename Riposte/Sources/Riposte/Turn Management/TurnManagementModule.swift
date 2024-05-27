@@ -19,7 +19,7 @@ struct TurnManagementModule: SceneModule {
         
         var turnOrderStyle: TurnOrderStyle
         
-        var activeFaction: Faction
+        var activeFaction: Faction { turnQueue.activeFaction ?? .unknown }
         
         var turnQueue: TurnQueue
         
@@ -28,19 +28,18 @@ struct TurnManagementModule: SceneModule {
             
             turnQueue = TurnQueue(factionOrder: factions)
             
-            activeFaction = turnQueue.activeFaction ?? factions.first ?? .unknown
-            
             turnOrderStyle = style
         }
     }
     
     enum ExternalAction {
+        case initialize([Faction])
         case endTurn
     }
     
     enum Output {
-        case didStartTurn
-        case didEndTurn
+        case didStartTurn(Faction)
+        case didEndTurn(Faction)
         
         case didStartRound
         case didEndRound

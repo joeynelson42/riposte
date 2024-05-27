@@ -93,6 +93,7 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 3.5, 2.08165e-12, 4.5)
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 2.08165e-12, 4.5)
 
 [node name="StrategyGridPawnNode" parent="StrategySceneFlow/StrategyGrid" instance=ExtResource("2_hm4v2")]
+factionValue = 1
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.502308, 0.0513873, 0.390915)
 
 [node name="InputReceiver" type="InputReceiver" parent="StrategySceneFlow"]

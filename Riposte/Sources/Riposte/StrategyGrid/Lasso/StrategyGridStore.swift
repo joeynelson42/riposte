@@ -19,11 +19,29 @@ class StrategyGridStore: GDLassoStore<StrategyGridModule> {
     
     override func handleAction(_ externalAction: GDLassoStore<StrategyGridModule>.ExternalAction) {
         switch externalAction {
+        case .input(let inputAction):
+            handleInput(action: inputAction)
+        case .turn(let turnAction):
+            handleTurn(action: turnAction)
+        }
+    }
+    
+    private func handleInput(action: StrategyGridModule.ExternalAction.Input) {
+        switch action {
         case .didClickCell(let cell):
             handleDidClickCell(cell)
         case .didHoverCell(let cell):
             handleDidHoverCell(cell)
         case .didEndHovering:
+            break
+        }
+    }
+    
+    private func handleTurn(action: StrategyGridModule.ExternalAction.Turn) {
+        switch action {
+        case .didEndTurn(let faction):
+            break
+        case .didStartTurn(let faction):
             break
         }
     }
@@ -85,6 +103,7 @@ class StrategyGridStore: GDLassoStore<StrategyGridModule> {
             var mapper = GridCellMapper()
             let gridMap = try mapper.createMap(from: cells, pawns: pawns)
             update { $0.gridMap = gridMap }
+            dispatchOutput(.didInitializeGrid(gridMap))
         } catch {
             GD.print(error)
         }

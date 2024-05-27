@@ -7,4 +7,8 @@
 
 import Foundation
 
-protocol StrategyGridPawn: PawnMovable, GloballyPositioned, NodeEquatable {}
+protocol StrategyGridPawn: PawnMovable, GloballyPositioned, NodeEquatable {
+    
+    var faction: Faction { get }
+    
+}

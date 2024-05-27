@@ -23,15 +23,26 @@ struct StrategyGridModule: SceneModule {
     }
     
     enum ExternalAction {
-        case didClickCell(StrategyGridCell)
-        case didHoverCell(StrategyGridCell)
-        case didEndHovering
+        enum Input {
+            case didClickCell(StrategyGridCell)
+            case didHoverCell(StrategyGridCell)
+            case didEndHovering
+        }
+        case input(Input)
+        
+        enum Turn {
+            case didEndTurn(Faction)
+            case didStartTurn(Faction)
+        }
+        case turn(Turn)
     }
     
     enum InternalAction {
         case onReady(gridCells: [StrategyGridCell], pawns: [any StrategyGridPawn])
     }
     
-    enum Output {}
+    enum Output {
+        case didInitializeGrid(StrategyGridMap)
+    }
 }
 
