@@ -17,6 +17,7 @@ class StrategySceneFlow: Node3D, SceneFlow {
     
     private let gridStore = StrategyGridStore(with: .init())
     private let inputStore = InputReceiverStore(with: .init())
+    private let turnStore = TurnManagementStore(with: .init(factions: []))
     
     override func _ready() {
         grid?.set(store: gridStore.asNodeStore())
