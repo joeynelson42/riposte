@@ -31,7 +31,7 @@ class TurnManagementStore: GDLassoStore<TurnManagementModule> {
                     let newTurnQueue = TurnQueue(factionOrder: state.turnQueue.factionOrder)
                     update { $0.turnQueue = newTurnQueue }
                     dispatchOutput(.didStartRound)
-                    
+                    dispatchOutput(.didStartTurn(state.activeFaction))
                 } else {
                     dispatchOutput(.didEndTurn(previousFaction))
                     dispatchOutput(.didStartTurn(newCurrentFaction))

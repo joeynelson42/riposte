@@ -23,24 +23,15 @@ class StrategyGrid: Node3D, SceneNode {
         
         var visibleNodes = [StrategyGridCell]()
         
-//        if let start = state?.start, let node = gridMap.getCellAtIndex(start) {
-//            visibleNodes.append(node)
-//        }
-//        
-//        if let end = state?.end, let node = gridMap.getCellAtIndex(end) {
-//            visibleNodes.append(node)
-//        } else 
         if let hoveredCell = state?.hovered {
             visibleNodes.append(hoveredCell)
         }
-//        
-//        if let path = state?.currentPath {
-//            let pathNodes = path.nodes.compactMap { gridMap.getCellAtIndex($0.index) }
-//            visibleNodes.append(contentsOf: pathNodes)
-//        } else if let hoveredPath = state?.hoveredPath {
-//            let pathNodes = hoveredPath.nodes.compactMap { gridMap.getCellAtIndex($0.index) }
-//            visibleNodes.append(contentsOf: pathNodes)
-//        }
+        
+        if let selectedPawn = state?.selectedPawn, 
+           let pawnIndex = state?.gridMap.getIndexFor(pawn: selectedPawn),
+           let cell = state?.gridMap.getCellAtIndex(pawnIndex) {
+            visibleNodes.append(cell)
+        }
         
         gridMap.cellNodes.forEach { node in
             node.setPathIndicator(hidden: !visibleNodes.contains( where: { $0.isEqualTo(item: node) }))
@@ -51,18 +42,10 @@ class StrategyGrid: Node3D, SceneNode {
         setUpGrid(with: store)
         setUpActionList(with: store)
 
-//        store.observeState(\.start) { [weak self] index in
-//            self?.updatePathIndicators()
-//        }
-//
-//        store.observeState(\.end) { [weak self] index in
-//            self?.updatePathIndicators()
-//        }
-//
-//        store.observeState(\.currentPath) { [weak self] index in
-//            self?.updatePathIndicators()
-//        }
-
+        store.observeState(\.selectedPawn) { [weak self] _ in
+            self?.updatePathIndicators()
+        }
+        
         store.observeState(\.gridMap) { [weak self] _ in
             if self?.hasSnappedPawns ?? false {
                 self?.snapPawnsToGrid()
@@ -70,9 +53,8 @@ class StrategyGrid: Node3D, SceneNode {
             }
         }
 
-        store.observeState(\.hovered) { oldValue, newValue in
-            oldValue??.setPathIndicator(hidden: true)
-            newValue?.setPathIndicator(hidden: false)
+        store.observeState(\.hovered) { [weak self] _ in
+            self?.updatePathIndicators()
         }
     }
     

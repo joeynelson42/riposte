@@ -40,6 +40,9 @@ extension StrategySceneFlow {
             let factions = Set(gridMap.pawnNodes.map { $0.faction })
             log("did init grid, initializing turn store, faction count: \(factions.count). pawn count: \(gridMap.pawnNodes.count)")
             turnStore.dispatchExternalAction(.initialize(Array(factions)))
+            
+        case .didExhaustAllActivePawns:
+            turnStore.dispatchExternalAction(.endTurn)
         }
     }
 }
@@ -81,9 +84,9 @@ extension StrategySceneFlow {
         case .didEndTurn(let faction):
             gridStore.dispatchExternalAction(.turn(.didEndTurn(faction)))
         case .didStartRound:
-            break
+            log("did start round")
         case .didEndRound:
-            break
+            log("did end round")
         }
     }
 }

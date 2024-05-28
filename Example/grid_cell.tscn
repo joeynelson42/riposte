@@ -23,7 +23,26 @@ mesh = SubResource("BoxMesh_sri4f")
 [node name="CollisionShape3D" type="CollisionShape3D" parent="."]
 shape = SubResource("BoxShape3D_4enes")
 
-[node name="PathIndicator" type="MeshInstance3D" parent="."]
+[node name="PathIndicator" type="Node3D" parent="."]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0, 0.0585439, 0)
 visible = false
+
+[node name="PathIndicator2" type="MeshInstance3D" parent="PathIndicator"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.25, 0.000456102, 0.25)
 mesh = SubResource("SphereMesh_isd8f")
+skeleton = NodePath("../..")
+
+[node name="PathIndicator3" type="MeshInstance3D" parent="PathIndicator"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.25, 0.000456102, 0.25)
+mesh = SubResource("SphereMesh_isd8f")
+skeleton = NodePath("../..")
+
+[node name="PathIndicator4" type="MeshInstance3D" parent="PathIndicator"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, -0.25, 0.000456102, -0.25)
+mesh = SubResource("SphereMesh_isd8f")
+skeleton = NodePath("../..")
+
+[node name="PathIndicator5" type="MeshInstance3D" parent="PathIndicator"]
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.25, 0.000456102, -0.25)
+mesh = SubResource("SphereMesh_isd8f")
+skeleton = NodePath("../..")

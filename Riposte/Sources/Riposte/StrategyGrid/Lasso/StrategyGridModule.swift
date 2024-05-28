@@ -16,6 +16,9 @@ struct StrategyGridModule: SceneModule {
         
         var selectedPawn: (any StrategyGridPawn)?
         
+        var activeFaction: Faction = .unknown
+        var activePawns: [any StrategyGridPawn] = []
+        
         var hovered: StrategyGridCell?
         var hoveredPath: Path?
         
@@ -48,6 +51,7 @@ struct StrategyGridModule: SceneModule {
     
     enum Output {
         case didInitializeGrid(StrategyGridMap)
+        case didExhaustAllActivePawns
     }
 }
 
