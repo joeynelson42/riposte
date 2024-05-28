@@ -18,7 +18,6 @@ final class ActionList: Control, SceneNode {
     
     func setUp(with store: ActionList.NodeStore) {
         store.observeState(\.actions) { [weak self] actions in
-            GD.print("observing actions, \(actions)")
             guard let self else { return }
             self.list?.clear()
 

@@ -65,42 +65,72 @@ class StrategyGridStore: GDLassoStore<StrategyGridModule> {
         guard let gridIndex = state.gridMap.getIndexFor(cell: cell) else { return }
         GD.print("Did click cell at \(gridIndex)")
         
-        if !state.start.isNull && !state.end.isNull {
-            update { state in
-                state.start = nil
-                state.end = nil
-                state.currentPath = nil
-            }
+        if let clickedPawn = state.gridMap.getPawnAtIndex(gridIndex) {
+            handleDidSelectOccupiedCell(cell, occupant: clickedPawn)
+        } else {
+            handleDidSelectEmptyCell(cell)
         }
         
-        if state.start.isNull {
-            update { $0.start = gridIndex }
-        } else if state.end.isNull {
-            update { $0.end = gridIndex }
+//        if !state.start.isNull && !state.end.isNull {
+//            update { state in
+//                state.start = nil
+//                state.end = nil
+//                state.currentPath = nil
+//            }
+//        }
+//        
+//        if state.start.isNull {
+//            update { $0.start = gridIndex }
+//        } else if state.end.isNull {
+//            update { $0.end = gridIndex }
+//        }
+//        
+//        if let start = state.start, let end = state.end, let path = findPathBetween(start: start, end: end) {
+//            for (index, node) in path.nodes.enumerated() {
+//                GD.print("\(index): \(node.index)")
+//            }
+//            
+//            update { $0.currentPath = path }
+//            
+//            if let pawn = state.gridMap.pawnNodes.first {
+//                let globalPath = GlobalPath(steps: path.nodes.compactMap { state.gridMap.getCellAtIndex($0.index)?.globalPosition })
+//                Task {
+//                    await pawn.move(along: globalPath)
+//                }
+//            }
+//        }
+    }
+    
+    private func handleDidSelectEmptyCell(_ cell: StrategyGridCell) {
+        if let selectedPawn = state.selectedPawn {
+            GD.print("Did click empty cell with selected pawn")
+            update { $0.currentActions = ["Move"] }
+        } else {
+            GD.print("Did click empty cell, no selected pawn")
         }
-        
-        if let start = state.start, let end = state.end, let path = findPathBetween(start: start, end: end) {
-            for (index, node) in path.nodes.enumerated() {
-                GD.print("\(index): \(node.index)")
+    }
+    
+    private func handleDidSelectOccupiedCell(_ cell: StrategyGridCell, occupant: any StrategyGridPawn) {
+        if let selectedPawn = state.selectedPawn {
+            if selectedPawn.faction != occupant.faction {
+                GD.print("Did click occupied cell, selected pawn, attack!")
+                update { $0.currentActions = ["Attack!"] }
+            } else {
+                GD.print("Did click occupied cell, selected pawn, support")
             }
-            
-            update { $0.currentPath = path }
-            
-            if let pawn = state.gridMap.pawnNodes.first {
-                let globalPath = GlobalPath(steps: path.nodes.compactMap { state.gridMap.getCellAtIndex($0.index)?.globalPosition })
-                Task {
-                    await pawn.move(along: globalPath)
-                }
-            }
+        } else {
+            GD.print("Did click occupied cell, no selected pawn")
+            update { $0.selectedPawn = occupant }
         }
     }
     
     private func handleDidHoverCell(_ cell: StrategyGridCell) {
         update { $0.hovered = cell }
         
-        guard let start = state.start, 
+        guard let selectedPawn = state.selectedPawn,
+              let pawnIndex = state.gridMap.getIndexFor(pawn: selectedPawn),
               let hoveredIndex = state.gridMap.getIndexFor(cell: cell),
-              let hoveredPath = findPathBetween(start: start, end: hoveredIndex)
+              let hoveredPath = findPathBetween(start: pawnIndex, end: hoveredIndex)
         else { return }
         
         update { $0.hoveredPath = hoveredPath }

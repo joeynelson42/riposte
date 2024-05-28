@@ -20,23 +20,25 @@ class StrategyGrid: Node3D, SceneNode {
         guard let gridMap = state?.gridMap else { return }
         
         var visibleNodes = [StrategyGridCell]()
-        if let start = state?.start, let node = gridMap.getCellAtIndex(start) {
-            visibleNodes.append(node)
-        }
         
-        if let end = state?.end, let node = gridMap.getCellAtIndex(end) {
-            visibleNodes.append(node)
-        } else if let hoveredCell = state?.hovered {
+//        if let start = state?.start, let node = gridMap.getCellAtIndex(start) {
+//            visibleNodes.append(node)
+//        }
+//        
+//        if let end = state?.end, let node = gridMap.getCellAtIndex(end) {
+//            visibleNodes.append(node)
+//        } else 
+        if let hoveredCell = state?.hovered {
             visibleNodes.append(hoveredCell)
         }
-        
-        if let path = state?.currentPath {
-            let pathNodes = path.nodes.compactMap { gridMap.getCellAtIndex($0.index) }
-            visibleNodes.append(contentsOf: pathNodes)
-        } else if let hoveredPath = state?.hoveredPath {
-            let pathNodes = hoveredPath.nodes.compactMap { gridMap.getCellAtIndex($0.index) }
-            visibleNodes.append(contentsOf: pathNodes)
-        }
+//        
+//        if let path = state?.currentPath {
+//            let pathNodes = path.nodes.compactMap { gridMap.getCellAtIndex($0.index) }
+//            visibleNodes.append(contentsOf: pathNodes)
+//        } else if let hoveredPath = state?.hoveredPath {
+//            let pathNodes = hoveredPath.nodes.compactMap { gridMap.getCellAtIndex($0.index) }
+//            visibleNodes.append(contentsOf: pathNodes)
+//        }
         
         gridMap.cellNodes.forEach { node in
             node.setPathIndicator(hidden: !visibleNodes.contains( where: { $0.isEqualTo(item: node) }))
@@ -44,22 +46,20 @@ class StrategyGrid: Node3D, SceneNode {
     }
     
     func setUp(with store: StrategyGrid.NodeStore) {
-        let allCells: [any StrategyGridCell] = getChildren().compactMap { $0 as? any StrategyGridCell }
-        let allPawns: [any StrategyGridPawn] = getChildren().compactMap { $0 as? any StrategyGridPawn }
+        setUpGrid(with: store)
+        setUpActionList(with: store)
 
-        dispatchInternalAction(.onReady(gridCells: allCells, pawns: allPawns))
-
-        store.observeState(\.start) { [weak self] index in
-            self?.updatePathIndicators()
-        }
-
-        store.observeState(\.end) { [weak self] index in
-            self?.updatePathIndicators()
-        }
-
-        store.observeState(\.currentPath) { [weak self] index in
-            self?.updatePathIndicators()
-        }
+//        store.observeState(\.start) { [weak self] index in
+//            self?.updatePathIndicators()
+//        }
+//
+//        store.observeState(\.end) { [weak self] index in
+//            self?.updatePathIndicators()
+//        }
+//
+//        store.observeState(\.currentPath) { [weak self] index in
+//            self?.updatePathIndicators()
+//        }
 
         store.observeState(\.gridMap) { [weak self] _ in
             self?.snapPawnsToGrid()
@@ -69,7 +69,16 @@ class StrategyGrid: Node3D, SceneNode {
             oldValue??.setPathIndicator(hidden: true)
             newValue?.setPathIndicator(hidden: false)
         }
+    }
+    
+    private func setUpGrid(with store: StrategyGrid.NodeStore) {
+        let allCells: [any StrategyGridCell] = getChildren().compactMap { $0 as? any StrategyGridCell }
+        let allPawns: [any StrategyGridPawn] = getChildren().compactMap { $0 as? any StrategyGridPawn }
 
+        dispatchInternalAction(.onReady(gridCells: allCells, pawns: allPawns))
+    }
+    
+    private func setUpActionList(with store: StrategyGrid.NodeStore) {
         let actionListStore = store.asNodeStore(
             for: ActionListNodeModule.self,
             stateMap: { ActionListNodeModule.NodeState(actions: $0.currentActions) },

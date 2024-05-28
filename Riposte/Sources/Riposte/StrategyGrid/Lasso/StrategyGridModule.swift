@@ -14,9 +14,7 @@ struct StrategyGridModule: SceneModule {
     struct State {
         var gridMap = StrategyGridMap()
         
-        var start: GridIndex?
-        var end: GridIndex?
-        var currentPath: Path?
+        var selectedPawn: (any StrategyGridPawn)?
         
         var hovered: StrategyGridCell?
         var hoveredPath: Path?
