@@ -32,6 +32,11 @@ struct StrategyGridMap {
     // MARK: Cells
     var pathNodes: [any PathNode] { cells.keys.map { SimplePathNode(index: $0) } }
     
+    var unoccupiedPathNodes: [any PathNode] {
+        let indices = unoccupiedCellNodes.compactMap { getIndexFor(cell: $0) }
+        return indices.map { SimplePathNode(index: $0) }
+    }
+    
     var cellNodes: [StrategyGridCell] { Array(cells.values) }
     
     func getCellAtIndex(_ index: GridIndex) -> StrategyGridCell? {
@@ -40,6 +45,15 @@ struct StrategyGridMap {
     
     func getIndexFor(cell: StrategyGridCell) -> GridIndex? {
         return cells.first(where: { $0.value.isEqualTo(item: cell) })?.key
+    }
+    
+    // TODO: cache this
+    var unoccupiedCellNodes: [StrategyGridCell] {
+        cellNodes.compactMap { cell in
+            guard let index = getIndexFor(cell: cell) else { return nil }
+            if let _ = getPawnAtIndex(index) { return nil }
+            return cell
+        }
     }
     
     // MARK: Pawns

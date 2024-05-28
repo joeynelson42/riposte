@@ -26,12 +26,12 @@ struct GridCellMapper {
         queue.append(root)
         evaluateCell(root)
         
-        GD.print("Mapped \(cells.count) cell(s)")
+        log("Mapped \(cells.count) cell(s)")
         
         var pawnPositions = [GridIndex: any StrategyGridPawn]()
         pawns.forEach { pawn in
             if let pawnIndex = findPawnsNearestIndex(pawn: pawn, in: cellPositions) {
-                GD.print("Found a pawn at index: \(pawnIndex)")
+                log("Found a pawn at index: \(pawnIndex)")
                 pawnPositions[pawnIndex] = pawn
             }
         }

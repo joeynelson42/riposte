@@ -8,6 +8,6 @@
 import Foundation
 import SwiftGodot
 
-func Log(_ item: Any) {
+func log(_ item: Any) {
     GD.print("\(item)")
 }

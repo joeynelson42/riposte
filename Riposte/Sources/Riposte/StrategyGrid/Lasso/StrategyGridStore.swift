@@ -63,7 +63,7 @@ class StrategyGridStore: GDLassoStore<StrategyGridModule> {
     
     private func handleDidClickCell(_ cell: StrategyGridCell) {
         guard let gridIndex = state.gridMap.getIndexFor(cell: cell) else { return }
-        GD.print("Did click cell at \(gridIndex)")
+        log("Did click cell at \(gridIndex)")
         
         if let clickedPawn = state.gridMap.getPawnAtIndex(gridIndex) {
             handleDidSelectOccupiedCell(cell, occupant: clickedPawn)
@@ -79,7 +79,7 @@ class StrategyGridStore: GDLassoStore<StrategyGridModule> {
                   let path = findPathBetween(start: start, end: end)
             else { return }
             
-            GD.print("Did click empty cell with selected pawn")
+            log("Did click empty cell with selected pawn")
             update { $0.currentActions = ["Move"] }
             
             let globalSteps = path.nodes.compactMap { state.gridMap.getCellAtIndex($0.index)?.globalPosition }
@@ -90,25 +90,25 @@ class StrategyGridStore: GDLassoStore<StrategyGridModule> {
                     do {
                         try $0.gridMap.setPawnIndex(pawn: selectedPawn, index: end)
                     } catch {
-                        Log(error)
+                        log(error)
                     }
                 }
             }
         } else {
-            GD.print("Did click empty cell, no selected pawn")
+            log("Did click empty cell, no selected pawn")
         }
     }
     
     private func handleDidSelectOccupiedCell(_ cell: StrategyGridCell, occupant: any StrategyGridPawn) {
         if let selectedPawn = state.selectedPawn {
             if selectedPawn.faction != occupant.faction {
-                GD.print("Did click occupied cell, selected pawn, attack!")
+                log("Did click occupied cell, selected pawn, attack!")
                 update { $0.currentActions = ["Attack!"] }
             } else {
-                GD.print("Did click occupied cell, selected pawn, support")
+                log("Did click occupied cell, selected pawn, support")
             }
         } else {
-            GD.print("Did click occupied cell, no selected pawn")
+            log("Did click occupied cell, no selected pawn")
             update { $0.selectedPawn = occupant }
         }
     }
@@ -139,7 +139,7 @@ class StrategyGridStore: GDLassoStore<StrategyGridModule> {
             update { $0.gridMap = gridMap }
             dispatchOutput(.didInitializeGrid(gridMap))
         } catch {
-            GD.print(error)
+            log(error)
         }
     }
     
@@ -147,6 +147,6 @@ class StrategyGridStore: GDLassoStore<StrategyGridModule> {
         let pathfinder = AStarPathfinder()
         let startNode = SimplePathNode(index: start)
         let endNode = SimplePathNode(index: end)
-        return pathfinder.findPath(in: state.gridMap.pathNodes, startNode: startNode, endNode: endNode)
+        return pathfinder.findPath(in: state.gridMap.unoccupiedPathNodes + [startNode], startNode: startNode, endNode: endNode)
     }
 }

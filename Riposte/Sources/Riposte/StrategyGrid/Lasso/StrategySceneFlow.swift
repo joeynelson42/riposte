@@ -38,7 +38,7 @@ extension StrategySceneFlow {
         switch output {
         case .didInitializeGrid(let gridMap):
             let factions = Set(gridMap.pawnNodes.map { $0.faction })
-            GD.print("did init grid, initializing turn store, faction count: \(factions.count). pawn count: \(gridMap.pawnNodes.count)")
+            log("did init grid, initializing turn store, faction count: \(factions.count). pawn count: \(gridMap.pawnNodes.count)")
             turnStore.dispatchExternalAction(.initialize(Array(factions)))
         }
     }
@@ -55,7 +55,7 @@ extension StrategySceneFlow {
             case .mouseMotion(let event):
                 handleMouseMotion(event: event)
             case .move(direction: let direction, let event):
-                GD.print(event.asText())
+                log(event.asText())
             }
         }
     }
@@ -77,7 +77,7 @@ extension StrategySceneFlow {
         switch output {
         case .didStartTurn(let faction):
             gridStore.dispatchExternalAction(.turn(.didStartTurn(faction)))
-            GD.print("did start turn, faction: \(faction)")
+            log("did start turn, faction: \(faction)")
         case .didEndTurn(let faction):
             gridStore.dispatchExternalAction(.turn(.didEndTurn(faction)))
         case .didStartRound:
