@@ -21,7 +21,7 @@ struct StrategyGridModule: SceneModule {
         var hovered: StrategyGridCell?
         var hoveredPath: Path?
         
-        var currentActions: [String] = []
+        var currentActions: [String] = ["Hello", "World"]
     }
     
     enum ExternalAction {

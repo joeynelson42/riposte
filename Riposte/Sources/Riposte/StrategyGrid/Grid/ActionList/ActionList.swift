@@ -17,11 +17,21 @@ final class ActionList: Control, SceneNode {
     @SceneTree(path: "List") private var list: ItemList?
     
     func setUp(with store: ActionList.NodeStore) {
-        store.observeState(\.actions) { actions in
-            GD.print(actions)
+        store.observeState(\.actions) { [weak self] actions in
+            GD.print("observing actions, \(actions)")
+            guard let self else { return }
+            self.list?.clear()
+
+            for action in actions {
+                self.list?.addItem(text: action)
+            }
         }
         
-        list?.itemClicked.connect({ index, _, _ in
+        list?.itemSelected.connect({ index in
+            store.dispatchInternalAction(.didSelectItem(index: Int(index)))
+        })
+        
+        list?.itemClicked.connect({ index,_,_ in
             store.dispatchInternalAction(.didSelectItem(index: Int(index)))
         })
     }

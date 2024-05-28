@@ -25,7 +25,8 @@ class StrategyGridStore: GDLassoStore<StrategyGridModule> {
     private func handleActionList(action: StrategyGridModule.InternalAction.ActionList) {
         switch action {
         case .didSelectItem(index: let index):
-            GD.print(index)
+            let actions = (0..<Int.random(in: 0...5)).map { "\($0)" } + ["hello"]
+            update { $0.currentActions = actions }
         }
     }
     
