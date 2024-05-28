@@ -9,6 +9,12 @@ import Foundation
 import SwiftGodot
 
 struct StrategyGridMap {
+    
+    enum MapError: Error {
+        case pawnDoesNotExist
+        case indexIsNotEmpty
+    }
+    
     private var cells: [GridIndex: StrategyGridCell]
     
     private var pawns: [GridIndex: any StrategyGridPawn]
@@ -45,5 +51,21 @@ struct StrategyGridMap {
     
     func getIndexFor(pawn: any StrategyGridPawn) -> GridIndex? {
         return pawns.first(where: { $0.value.isEqualTo(item: pawn) })?.key
+    }
+    
+    mutating func setPawnIndex(pawn: any StrategyGridPawn, index: GridIndex) throws {
+        // Verify pawn exists
+        guard let currentIndex = getIndexFor(pawn: pawn) else {
+            throw MapError.pawnDoesNotExist
+        }
+        
+        // Verify index is empty
+        guard getPawnAtIndex(index) == nil else {
+            throw MapError.indexIsNotEmpty
+        }
+        
+        // Move pawn to index
+        pawns[currentIndex] = nil
+        pawns[index] = pawn
     }
 }

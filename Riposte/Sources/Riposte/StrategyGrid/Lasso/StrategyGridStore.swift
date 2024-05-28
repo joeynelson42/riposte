@@ -86,6 +86,13 @@ class StrategyGridStore: GDLassoStore<StrategyGridModule> {
             
             Task {
                 await selectedPawn.move(along: GlobalPath(steps: globalSteps))
+                update {
+                    do {
+                        try $0.gridMap.setPawnIndex(pawn: selectedPawn, index: end)
+                    } catch {
+                        Log(error)
+                    }
+                }
             }
         } else {
             GD.print("Did click empty cell, no selected pawn")

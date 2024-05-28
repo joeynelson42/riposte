@@ -33,6 +33,7 @@ class SnapPawnMover: PawnMover {
     @MainActor
     private func move(node: CharacterBody3D, to step: Vector3) async {
         node.globalPosition = Vector3(x: step.x, y: node.globalPosition.y, z: step.z)
+        Log("Moved pawn to \(step)")
         try? await Task.sleep(nanoseconds: snapDelay)
     }
 }

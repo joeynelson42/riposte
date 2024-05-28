@@ -16,6 +16,8 @@ class StrategyGrid: Node3D, SceneNode {
     
     @SceneTree(path: "ActionList") private var actionList: ActionList?
     
+    private var hasSnappedPawns: Bool = false
+    
     private func updatePathIndicators() {
         guard let gridMap = state?.gridMap else { return }
         
@@ -62,7 +64,10 @@ class StrategyGrid: Node3D, SceneNode {
 //        }
 
         store.observeState(\.gridMap) { [weak self] _ in
-            self?.snapPawnsToGrid()
+            if self?.hasSnappedPawns ?? false {
+                self?.snapPawnsToGrid()
+                self?.hasSnappedPawns = true
+            }
         }
 
         store.observeState(\.hovered) { oldValue, newValue in
@@ -74,7 +79,6 @@ class StrategyGrid: Node3D, SceneNode {
     private func setUpGrid(with store: StrategyGrid.NodeStore) {
         let allCells: [any StrategyGridCell] = getChildren().compactMap { $0 as? any StrategyGridCell }
         let allPawns: [any StrategyGridPawn] = getChildren().compactMap { $0 as? any StrategyGridPawn }
-
         dispatchInternalAction(.onReady(gridCells: allCells, pawns: allPawns))
     }
     
