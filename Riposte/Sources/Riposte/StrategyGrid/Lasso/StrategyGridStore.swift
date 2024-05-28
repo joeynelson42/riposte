@@ -70,41 +70,23 @@ class StrategyGridStore: GDLassoStore<StrategyGridModule> {
         } else {
             handleDidSelectEmptyCell(cell)
         }
-        
-//        if !state.start.isNull && !state.end.isNull {
-//            update { state in
-//                state.start = nil
-//                state.end = nil
-//                state.currentPath = nil
-//            }
-//        }
-//        
-//        if state.start.isNull {
-//            update { $0.start = gridIndex }
-//        } else if state.end.isNull {
-//            update { $0.end = gridIndex }
-//        }
-//        
-//        if let start = state.start, let end = state.end, let path = findPathBetween(start: start, end: end) {
-//            for (index, node) in path.nodes.enumerated() {
-//                GD.print("\(index): \(node.index)")
-//            }
-//            
-//            update { $0.currentPath = path }
-//            
-//            if let pawn = state.gridMap.pawnNodes.first {
-//                let globalPath = GlobalPath(steps: path.nodes.compactMap { state.gridMap.getCellAtIndex($0.index)?.globalPosition })
-//                Task {
-//                    await pawn.move(along: globalPath)
-//                }
-//            }
-//        }
     }
     
     private func handleDidSelectEmptyCell(_ cell: StrategyGridCell) {
         if let selectedPawn = state.selectedPawn {
+            guard let start = state.gridMap.getIndexFor(pawn: selectedPawn), 
+                  let end = state.gridMap.getIndexFor(cell: cell),
+                  let path = findPathBetween(start: start, end: end)
+            else { return }
+            
             GD.print("Did click empty cell with selected pawn")
             update { $0.currentActions = ["Move"] }
+            
+            let globalSteps = path.nodes.compactMap { state.gridMap.getCellAtIndex($0.index)?.globalPosition }
+            
+            Task {
+                await selectedPawn.move(along: GlobalPath(steps: globalSteps))
+            }
         } else {
             GD.print("Did click empty cell, no selected pawn")
         }
