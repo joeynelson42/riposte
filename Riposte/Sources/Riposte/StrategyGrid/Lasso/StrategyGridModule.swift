@@ -20,6 +20,8 @@ struct StrategyGridModule: SceneModule {
         
         var hovered: StrategyGridCell?
         var hoveredPath: Path?
+        
+        var currentActions: [String] = []
     }
     
     enum ExternalAction {
@@ -39,6 +41,11 @@ struct StrategyGridModule: SceneModule {
     
     enum InternalAction {
         case onReady(gridCells: [StrategyGridCell], pawns: [any StrategyGridPawn])
+        
+        enum ActionList {
+            case didSelectItem(index: Int)
+        }
+        case actionList(ActionList)
     }
     
     enum Output {

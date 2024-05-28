@@ -10,12 +10,26 @@ import GDLasso
 import SwiftGodot
 
 class StrategyGridStore: GDLassoStore<StrategyGridModule> {
+    
+    // MARK: Internal
+    
     override func handleAction(_ internalaAction: GDLassoStore<StrategyGridModule>.InternalAction) {
         switch internalaAction {
         case .onReady(let cells, let pawns):
             initializeGridMap(cells: cells, pawns: pawns)
+        case .actionList(let listAction):
+            handleActionList(action: listAction)
         }
     }
+    
+    private func handleActionList(action: StrategyGridModule.InternalAction.ActionList) {
+        switch action {
+        case .didSelectItem(index: let index):
+            GD.print(index)
+        }
+    }
+    
+    // MARK: External
     
     override func handleAction(_ externalAction: GDLassoStore<StrategyGridModule>.ExternalAction) {
         switch externalAction {

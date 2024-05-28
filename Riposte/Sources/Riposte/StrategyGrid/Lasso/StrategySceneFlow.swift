@@ -25,10 +25,6 @@ class StrategySceneFlow: Node3D, SceneFlow {
         gridStore.observeOutput(observeGridOutput(_:))
         grid?.set(store: gridStore.asNodeStore())
         
-        if grid.isNull {
-            GD.print("Grid is null.")
-        }
-        
         inputReceiver?.set(store: inputStore.asNodeStore())
         inputStore.observeOutput(observeInputReciverOutput(_:))
         

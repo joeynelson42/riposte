@@ -14,6 +14,8 @@ class StrategyGrid: Node3D, SceneNode {
     
     var store: StrategyGridModule.NodeStore?
     
+    @SceneTree(path: "ActionList") private var actionList: ActionList?
+    
     private func updatePathIndicators() {
         guard let gridMap = state?.gridMap else { return }
         
@@ -41,32 +43,45 @@ class StrategyGrid: Node3D, SceneNode {
         }
     }
     
-    func setUpObservations() {
+    func setUp(with store: StrategyGrid.NodeStore) {
         let allCells: [any StrategyGridCell] = getChildren().compactMap { $0 as? any StrategyGridCell }
         let allPawns: [any StrategyGridPawn] = getChildren().compactMap { $0 as? any StrategyGridPawn }
-        
+
         dispatchInternalAction(.onReady(gridCells: allCells, pawns: allPawns))
-        
-        store?.observeState(\.start) { [weak self] index in
+
+        store.observeState(\.start) { [weak self] index in
             self?.updatePathIndicators()
         }
-        
-        store?.observeState(\.end) { [weak self] index in
+
+        store.observeState(\.end) { [weak self] index in
             self?.updatePathIndicators()
         }
-        
-        store?.observeState(\.currentPath) { [weak self] index in
+
+        store.observeState(\.currentPath) { [weak self] index in
             self?.updatePathIndicators()
         }
-        
-        store?.observeState(\.gridMap) { [weak self] _ in
+
+        store.observeState(\.gridMap) { [weak self] _ in
             self?.snapPawnsToGrid()
         }
-        
-        store?.observeState(\.hovered) { oldValue, newValue in
+
+        store.observeState(\.hovered) { oldValue, newValue in
             oldValue??.setPathIndicator(hidden: true)
             newValue?.setPathIndicator(hidden: false)
         }
+
+        let actionListStore = store.asNodeStore(
+            for: ActionListNodeModule.self,
+            stateMap: { ActionListNodeModule.NodeState(actions: $0.currentActions) },
+            actionMap: { action in
+                switch action {
+                case .didSelectItem(let index):
+                    return .actionList(.didSelectItem(index: index))
+                }
+            }
+        )
+
+        actionList?.set(store: actionListStore)
     }
     
     /// Moves pawns to the center of their corresponding grid cell on the x,z plane

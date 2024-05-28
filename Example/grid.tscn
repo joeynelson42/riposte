@@ -96,4 +96,18 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 2.08165e-12, 4.5)
 factionValue = 1
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.502308, 0.0513873, 0.390915)
 
+[node name="ActionList" type="ActionList" parent="StrategySceneFlow/StrategyGrid"]
+offset_right = 40.0
+offset_bottom = 40.0
+
+[node name="List" type="ItemList" parent="StrategySceneFlow/StrategyGrid/ActionList"]
+layout_mode = 0
+offset_left = 64.0
+offset_top = 64.0
+offset_right = 242.0
+offset_bottom = 99.0
+auto_height = true
+item_count = 1
+item_0/text = "Test"
+
 [node name="InputReceiver" type="InputReceiver" parent="StrategySceneFlow"]
