@@ -89,6 +89,7 @@ fileprivate extension PawnAction {
         case .attack: .attack
         case .support: .support
         case .endTurn: .none
+        case .compoundAction(_, let second): second.mapToIndicatorType
         }
     }
 }

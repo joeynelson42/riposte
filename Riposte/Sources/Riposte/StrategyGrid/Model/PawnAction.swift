@@ -7,8 +7,9 @@
 
 import Foundation
 
-enum PawnAction {
+indirect enum PawnAction: Equatable {
     case move, attack, support, endTurn
+    case compoundAction(PawnAction, PawnAction)
     
     var title: String {
         switch self {
@@ -16,6 +17,7 @@ enum PawnAction {
         case .attack: "Attack"
         case .support: "Support"
         case .endTurn: "End Turn"
+        case .compoundAction(let firstAction, let secondAction): "\(firstAction.title) & \(secondAction.title)"
         }
     }
     
@@ -26,6 +28,7 @@ enum PawnAction {
         case .attack: 2
         case .support: 1
         case .endTurn: -1
+        case .compoundAction(let firstAction, let secondAction): max(firstAction.displayPriority, secondAction.displayPriority)
         }
     }
 }

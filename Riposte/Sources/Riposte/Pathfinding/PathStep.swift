@@ -7,7 +7,7 @@
 
 import Foundation
 
-protocol PathNode: Equatable{
+protocol PathNode: Equatable {
     var index: GridIndex { get }
 }
 

@@ -118,7 +118,7 @@ fileprivate class MockPawn: StrategyGridPawn {
     
     func move(along path: GlobalPath) async {}
     
-    var globalPosition: Vector3 { return internalGlobalPosition }
+    var _globalPosition: Vector3 { return internalGlobalPosition }
     
     private var internalGlobalPosition = Vector3()
     
@@ -145,7 +145,7 @@ fileprivate class MockCell: StrategyGridCell {
     
     private var currentIndicator: StrategyGridCellIndicatorType?
     
-    var globalPosition: Vector3 { return internalGlobalPosition }
+    var _globalPosition: Vector3 { return internalGlobalPosition }
     
     private var internalGlobalPosition = Vector3()
     

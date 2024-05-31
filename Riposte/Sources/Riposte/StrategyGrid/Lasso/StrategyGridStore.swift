@@ -25,7 +25,14 @@ class StrategyGridStore: GDLassoStore<StrategyGridModule> {
     private func handleActionList(action: StrategyGridModule.InternalAction.ActionList) {
         switch action {
         case .didSelectItem(index: let index):
-            break
+            if let action = state.currentActions[safe: index], let selectedPawn = state.selectedPawn, let targetCell = state.selectedCell {
+                Task {
+                    await execute(action: action, actingPawn: selectedPawn, targetCell: targetCell)
+                }
+            } else if index == state.currentActions.count {
+                // Cancel
+                update { $0.selectedCell = nil }
+            }
         }
     }
     
@@ -102,6 +109,58 @@ class StrategyGridStore: GDLassoStore<StrategyGridModule> {
         let startNode = SimplePathNode(index: start)
         let endNode = SimplePathNode(index: end)
         return pathfinder.findPath(in: state.gridMap.unoccupiedPathNodes + [startNode], startNode: startNode, endNode: endNode)
+    }
+}
+
+// MARK: Action Execution
+extension StrategyGridStore {
+    
+    @MainActor
+    private func execute(action: PawnAction, actingPawn: any StrategyGridPawn, targetCell: StrategyGridCell) async {
+        guard let pawnIndex = state.gridMap.getIndexFor(pawn: actingPawn), let cellIndex = state.gridMap.getIndexFor(cell: targetCell) else { return }
+        log("execute \(action.title.lowercased()) action from pawn at \(pawnIndex) on cell at index \(cellIndex)")
+        
+        // Perform action
+        switch action {
+        case .move:
+            await executeMove(actingPawn: actingPawn, targetCell: targetCell)
+        case .attack:
+            break
+        case .support:
+            break
+        case .endTurn:
+            break
+        case .compoundAction(let first, let second):
+            await execute(action: first, actingPawn: actingPawn, targetCell: targetCell)
+            await execute(action: second, actingPawn: actingPawn, targetCell: targetCell)
+        }
+        
+        // Exhaust action
+        update { state in
+            do {
+                try state.activeActionPool?.exhaust(action: action, for: actingPawn)
+            } catch {
+                log("Failed to exhaust pawn's grid action with error: \(error)")
+            }
+        }
+        
+        // Deselect cell and pawn
+        update { state in
+            state.selectedPawn = nil
+            state.selectedCell = nil
+        }
+    }
+    
+    /// Moves the given pawn to the given cell asynchronously
+    @MainActor
+    private func executeMove(actingPawn: any StrategyGridPawn, targetCell: StrategyGridCell) async {
+        guard let pawnIndex = state.gridMap.getIndexFor(pawn: actingPawn), 
+              let cellIndex = state.gridMap.getIndexFor(cell: targetCell),
+              let path = findPathBetween(start: pawnIndex, end: cellIndex)
+        else { return }
+        
+        let globalSteps = path.nodes.compactMap { state.gridMap.getCellAtIndex($0.index)?._globalPosition }
+        await actingPawn.move(along: GlobalPath(steps: globalSteps))
     }
 }
 

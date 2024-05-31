@@ -20,8 +20,4 @@ class StrategyGridPawnNode: CharacterBody3D, StrategyGridPawn {
     
     @Export
     public var moveDistance: Int = 4
-    
-    func setGlobalPosition(_ position: Vector3) {
-        globalPosition = position
-    }
 }

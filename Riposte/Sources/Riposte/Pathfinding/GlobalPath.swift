@@ -8,6 +8,6 @@
 import Foundation
 import SwiftGodot
 
-struct GlobalPath {
+struct GlobalPath: Equatable {
     var steps: [Vector3]
 }

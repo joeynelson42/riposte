@@ -68,7 +68,7 @@ struct StrategyGridModule: SceneModule {
     }
 }
 
-// Temp
+// Temp solution
 struct ActionEvaluation {
     
     static func getPossibleActions(for pawn: any StrategyGridPawn, on map: StrategyGridMap, availableActions: [PawnAction]) -> [GridIndex: [PawnAction]] {
@@ -97,15 +97,17 @@ struct ActionEvaluation {
             guard let path = pathfinder.findPath(in: potentialPathNodes, startNode: SimplePathNode(index: pawnIndex), endNode: SimplePathNode(index: cellIndex)) else { continue }
             
             // If distance to cell is greater than move distance there's nothing we can do there
-            if path.nodes.count > pawn.moveDistance {
+            if pawn.moveDistance < path.nodes.count - 1 {
                 continue
             }
             
+            var isNeighboringCell = path.nodes.count == 2
+            
             if let cellOccupant {
                 if cellOccupant.faction == pawn.faction {
-                    gridActions[cellIndex]?.append(.support)
+                    gridActions[cellIndex]?.append(isNeighboringCell ? .support : .compoundAction(.move, .support))
                 } else {
-                    gridActions[cellIndex]?.append(.attack)
+                    gridActions[cellIndex]?.append(isNeighboringCell ? .attack : .compoundAction(.move, .attack))
                 }
             } else {
                 gridActions[cellIndex]?.append(.move)

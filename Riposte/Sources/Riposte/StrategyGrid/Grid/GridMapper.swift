@@ -35,8 +35,8 @@ struct GridCellMapper {
                 pawnPositions[pawnIndex] = pawn
                 
                 // Snap pawn to cell's xz position
-                if let cellPos = cellPositions[pawnIndex]?.globalPosition {
-                    let pawnSnapPos = Vector3(x: cellPos.x, y: pawn.globalPosition.y, z: cellPos.z)
+                if let cellPos = cellPositions[pawnIndex]?._globalPosition {
+                    let pawnSnapPos = Vector3(x: cellPos.x, y: pawn._globalPosition.y, z: cellPos.z)
                     pawn.setGlobalPosition(pawnSnapPos)
                 }
             }
@@ -54,8 +54,8 @@ struct GridCellMapper {
                 continue
             }
             
-            let cellPosValue = cell.globalPosition.x + cell.globalPosition.z
-            let currentRootPosValue = currentRoot.globalPosition.x + currentRoot.globalPosition.z
+            let cellPosValue = cell._globalPosition.x + cell._globalPosition.z
+            let currentRootPosValue = currentRoot._globalPosition.x + currentRoot._globalPosition.z
             if cellPosValue < currentRootPosValue {
                 root = cell
             }
@@ -93,7 +93,7 @@ struct GridCellMapper {
     
     private func findCellNeighbor(_ originCell: StrategyGridCell, neighborDirection: Vector3) -> StrategyGridCell? {
         
-        let rayStart = originCell.globalPosition
+        let rayStart = originCell._globalPosition
         let rayEnd = rayStart + neighborDirection * 10
         let rayQuery = PhysicsRayQueryParameters3D.create(from: rayStart, to: rayEnd, collisionMask: 0b0001)
         guard let result = originCell.world3D?.directSpaceState?.intersectRay(parameters: rayQuery),
@@ -109,7 +109,7 @@ struct GridCellMapper {
         var currentNearestIndex: GridIndex?
         
         for (index, cell) in cellPositions {
-            let diff = (cell.globalPosition - pawn.globalPosition).length()
+            let diff = (cell._globalPosition - pawn._globalPosition).length()
             
             guard let currentLowest = lowestDiff else {
                 lowestDiff = diff

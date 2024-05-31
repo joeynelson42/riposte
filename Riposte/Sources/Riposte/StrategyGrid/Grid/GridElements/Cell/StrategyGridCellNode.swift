@@ -41,8 +41,4 @@ class StrategyGridCellNode: StaticBody3D, StrategyGridCell {
     func hideIndicators() {
         indicators.forEach { $0?.hide() }
     }
-    
-    func setGlobalPosition(_ position: SwiftGodot.Vector3) {
-        globalPosition = position
-    }
 }
