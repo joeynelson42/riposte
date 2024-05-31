@@ -8,6 +8,9 @@
 import Foundation
 import SwiftGodot
 
+/// Stores the indices of a StrategyGrid's cells and pawns and provides a plethora of data access methods
+///
+/// TODO: Lots of room for formalization and caching
 struct StrategyGridMap {
     
     enum MapError: Error {
@@ -32,10 +35,7 @@ struct StrategyGridMap {
     // MARK: Cells
     var pathNodes: [any PathNode] { cells.keys.map { SimplePathNode(index: $0) } }
     
-    var unoccupiedPathNodes: [any PathNode] {
-        let indices = unoccupiedCellNodes.compactMap { getIndexFor(cell: $0) }
-        return indices.map { SimplePathNode(index: $0) }
-    }
+    var unoccupiedPathNodes: [any PathNode] { unoccupiedCells.compactMap { getIndexFor(cell: $0) }.map { SimplePathNode(index: $0) } }
     
     var cellNodes: [StrategyGridCell] { Array(cells.values) }
     
@@ -47,12 +47,32 @@ struct StrategyGridMap {
         return cells.first(where: { $0.value.isEqualTo(item: cell) })?.key
     }
     
-    // TODO: cache this
-    var unoccupiedCellNodes: [StrategyGridCell] {
-        cellNodes.compactMap { cell in
-            guard let index = getIndexFor(cell: cell) else { return nil }
-            if let _ = getPawnAtIndex(index) { return nil }
-            return cell
+    var occupiedCells: [StrategyGridCell] { cellNodes.filter { isCellOccupied($0) } }
+    
+    var unoccupiedCells: [StrategyGridCell] { cellNodes.filter { !isCellOccupied($0) } }
+    
+    func isCellOccupied(_ cell: StrategyGridCell) -> Bool {
+        guard let index = getIndexFor(cell: cell) else { return false }
+        return getPawnAtIndex(index) != nil
+    }
+    
+    func getNeighbors(of cell: StrategyGridCell) -> [StrategyGridCell] {
+        guard let index = getIndexFor(cell: cell) else { return [] }
+        
+        let north = GridIndex(x: index.x, y: index.y + 1)
+        let south = GridIndex(x: index.x, y: index.y - 1)
+        let east = GridIndex(x: index.x + 1, y: index.y)
+        let west = GridIndex(x: index.x - 1, y: index.y)
+        
+        let neighbors: [StrategyGridCell] = [north, south, east, west].compactMap { getCellAtIndex($0) }
+        return neighbors
+    }
+    
+    func areNeighborsOccupied(cell: StrategyGridCell) -> Bool {
+        guard let index = getIndexFor(cell: cell) else { return false }
+        let neighbors = getNeighbors(of: cell)
+        return neighbors.reduce(false) { result, cell in
+            return result && isCellOccupied(cell)
         }
     }
     
