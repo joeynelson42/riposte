@@ -25,8 +25,7 @@ class StrategyGridStore: GDLassoStore<StrategyGridModule> {
     private func handleActionList(action: StrategyGridModule.InternalAction.ActionList) {
         switch action {
         case .didSelectItem(index: let index):
-            let actions = (0..<Int.random(in: 0...5)).map { "\($0)" } + ["hello"]
-            update { $0.currentActions = actions }
+            break
         }
     }
     
@@ -46,7 +45,8 @@ class StrategyGridStore: GDLassoStore<StrategyGridModule> {
         case .didClickCell(let cell):
             handleDidClickCell(cell)
         case .didHoverCell(let cell):
-            handleDidHoverCell(cell)
+//            handleDidHoverCell(cell)
+            break
         case .didEndHovering:
             break
         }
@@ -58,9 +58,11 @@ class StrategyGridStore: GDLassoStore<StrategyGridModule> {
             update { $0.activePawns = [] }
         case .didStartTurn(let faction):
             let activePawns = state.gridMap.pawnNodes.filter { $0.faction == faction }
+            let activePool = FactionActionPool(pawns: activePawns)
             update { state in
                 state.activeFaction = faction
                 state.activePawns = activePawns
+                state.activeActionPool = activePool
             }
         }
     }
@@ -124,51 +126,74 @@ extension StrategyGridStore {
     private func handleDidSelectEmptyCell(_ cell: StrategyGridCell) {
         if let selectedPawn = state.selectedPawn {
             log("Did click empty cell with selected pawn")
-            guard let start = state.gridMap.getIndexFor(pawn: selectedPawn),
-                  let end = state.gridMap.getIndexFor(cell: cell),
-                  let path = findPathBetween(start: start, end: end)
-            else { return }
+            update { $0.selectedCell = cell }
             
-            update { $0.currentActions = ["Move"] }
+//            guard let start = state.gridMap.getIndexFor(pawn: selectedPawn),
+//                  let end = state.gridMap.getIndexFor(cell: cell),
+//                  let path = findPathBetween(start: start, end: end)
+//            else { return }
             
-            let globalSteps = path.nodes.compactMap { state.gridMap.getCellAtIndex($0.index)?.globalPosition }
-            
-            Task {
-                await selectedPawn.move(along: GlobalPath(steps: globalSteps))
-                
-                var activePawns = state.activePawns
-                activePawns.removeAll(where: { $0.isEqualTo(item: selectedPawn) })
-                update { [weak self] state in
-                    do {
-                        try state.gridMap.setPawnIndex(pawn: selectedPawn, index: end)
-                        state.selectedPawn = nil
-                        state.activePawns = activePawns
-                        if state.activePawns.isEmpty {
-                            self?.dispatchOutput(.didExhaustAllActivePawns)
-                        }
-                    } catch {
-                        log(error)
-                    }
-                }
-            }
+//            update { $0.currentActions = ["Move"] }
+//            
+//            let globalSteps = path.nodes.compactMap { state.gridMap.getCellAtIndex($0.index)?.globalPosition }
+//            
+//            Task {
+//                await selectedPawn.move(along: GlobalPath(steps: globalSteps))
+//                
+//                update { [weak self] state in
+//                    do {
+//                        try state.gridMap.setPawnIndex(pawn: selectedPawn, index: end)
+//                        state.selectedPawn = nil
+//                    } catch {
+//                        log(error)
+//                    }
+//                }
+//                
+//                exhaustPawn(selectedPawn)
+//            }
         } else {
             log("Did click empty cell, no selected pawn")
         }
     }
     
     private func handleDidSelectOccupiedCell(_ cell: StrategyGridCell, occupant: any StrategyGridPawn) {
+        update { $0.selectedCell = cell }
+        
         if let selectedPawn = state.selectedPawn {
-            if selectedPawn.faction != occupant.faction {
-                log("Did click occupied cell, selected pawn, attack!")
-                update { $0.currentActions = ["Attack!"] }
-            } else {
-                log("Did click occupied cell, selected pawn, support")
-            }
+            update { $0.selectedCell = cell }
         } else if isPawnActive(occupant) {
-            log("Selected active pawn")
+            log("No active pawn. Selected active pawn")
             update { $0.selectedPawn = occupant }
         } else {
-            log("Selected inactive pawn")
+            log("No active pawn. Selected inactive pawn")
         }
     }
+    
+//    private func exhaustPawn(_ pawn: any StrategyGridPawn) {
+//        var activePawns = state.activePawns
+//        activePawns.removeAll(where: { $0.isEqualTo(item: pawn) })
+//        update { [weak self] state in
+//            state.activePawns = activePawns
+//            if state.activePawns.isEmpty {
+//                self?.dispatchOutput(.didExhaustAllActivePawns)
+//            }
+//        }
+//    }
 }
+
+/*
+ 
+ REVISED
+ 1. Turn starts
+ 2. User selects active pawn
+ 3. Store evaluates possible actions
+ 4. Store displays moveable tiles as blue and attackable tiles as red and supportable tiles as green, other tiles have no indication
+ 5. User selects valid cell
+ 6. Store evaluates which actions are possible at selected cell
+ 7. Displays possible actions in UI
+ 8. User selects action
+ 9. Store state now has selectedPawn and selectedAction
+ 10. Store executes the selectedAction on the selectedCell
+ 11. Store repeats steps 3-10 until no more actions are left or turn is explicitly ended by user or selects another pawn
+
+ */

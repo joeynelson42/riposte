@@ -7,6 +7,14 @@
 
 import Foundation
 
+enum StrategyGridCellIndicatorType {
+    case none, move, attack, support
+}
+
 protocol StrategyGridCell: GloballyPositioned, NodeEquatable, WorldAware {
-    func setPathIndicator(hidden: Bool)
+    
+    func showIndicator(type: StrategyGridCellIndicatorType)
+    
+    func hideIndicators()
+    
 }

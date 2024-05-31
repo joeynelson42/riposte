@@ -18,6 +18,9 @@ class StrategyGridPawnNode: CharacterBody3D, StrategyGridPawn {
     
     public var faction: Faction { Faction(rawValue: factionValue) ?? .unknown }
     
+    @Export
+    public var moveDistance: Int = 4
+    
     func setGlobalPosition(_ position: Vector3) {
         globalPosition = position
     }

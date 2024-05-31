@@ -15,14 +15,22 @@ struct StrategyGridModule: SceneModule {
         var gridMap = StrategyGridMap()
         
         var selectedPawn: (any StrategyGridPawn)?
+        var selectedAction: PawnAction?
+        var selectedCell: StrategyGridCell?
         
         var activeFaction: Faction = .unknown
         var activePawns: [any StrategyGridPawn] = []
         
-        var hovered: StrategyGridCell?
-        var hoveredPath: Path?
+        var activeActionPool: FactionActionPool?
         
-        var currentActions: [String] = ["Hello", "World"]
+        var currentActions: [GridIndex: [PawnAction]] {
+            guard let activeActionPool, let selectedPawn else { return [:] }
+            let availableActions = activeActionPool.getPawnActions(selectedPawn)
+            return ActionEvaluation.getPossibleActions(for: selectedPawn, on: gridMap, availableActions: availableActions)
+        }
+        
+        var hovered: StrategyGridCell?
+        var hoveredPath: Path?        
     }
     
     enum ExternalAction {
@@ -55,3 +63,53 @@ struct StrategyGridModule: SceneModule {
     }
 }
 
+// Temp
+struct ActionEvaluation {
+    
+    static func getPossibleActions(for pawn: any StrategyGridPawn, on map: StrategyGridMap, availableActions: [PawnAction]) -> [GridIndex: [PawnAction]] {
+        log(availableActions)
+        
+        guard let pawnIndex = map.getIndexFor(pawn: pawn) else { return [:] }
+        
+        let pathfinder = AStarPathfinder()
+        
+        var gridActions = [GridIndex: [PawnAction]]()
+        for cell in map.cellNodes {
+            guard let cellIndex = map.getIndexFor(cell: cell) else { continue }
+            gridActions[cellIndex] = []
+            
+            // If we're looking at the pawn's own cell the only action to take is endTurn.
+            if cellIndex == pawnIndex {
+                gridActions[cellIndex]?.append(.endTurn)
+                continue
+            }
+            
+            // Find path to cell
+            let cellOccupant = map.getPawnAtIndex(cellIndex)
+            var potentialPathNodes = map.unoccupiedPathNodes
+            potentialPathNodes.append(SimplePathNode(index: pawnIndex))
+            if cellOccupant != nil {
+                potentialPathNodes.append(SimplePathNode(index: cellIndex))
+            }
+            guard let path = pathfinder.findPath(in: potentialPathNodes, startNode: SimplePathNode(index: pawnIndex), endNode: SimplePathNode(index: cellIndex)) else { continue }
+            
+            // If distance to cell is greater than move distance there's nothing we can do there
+            if path.nodes.count > pawn.moveDistance {
+                continue
+            }
+            
+            if let cellOccupant {
+                if cellOccupant.faction == pawn.faction {
+                    gridActions[cellIndex]?.append(.support)
+                } else {
+                    gridActions[cellIndex]?.append(.attack)
+                }
+            } else {
+                gridActions[cellIndex]?.append(.move)
+            }
+        }
+        
+        return gridActions
+    }
+    
+}

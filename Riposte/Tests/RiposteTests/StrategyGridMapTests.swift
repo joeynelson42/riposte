@@ -110,6 +110,8 @@ fileprivate extension StrategyGridMapTests {
 }
 
 fileprivate class MockPawn: StrategyGridPawn {
+    var moveDistance: Int = 5
+    
     var mover: SnapPawnMover = SnapPawnMover()
     
     var faction: Faction
@@ -133,12 +135,15 @@ fileprivate class MockPawn: StrategyGridPawn {
 }
 
 fileprivate class MockCell: StrategyGridCell {
-    
-    private var isPathIndicatorVisible: Bool = false
-    
-    func setPathIndicator(hidden: Bool) {
-        isPathIndicatorVisible = !hidden
+    func showIndicator(type: StrategyGridCellIndicatorType) {
+        currentIndicator = type
     }
+    
+    func hideIndicators() {
+        currentIndicator = nil
+    }
+    
+    private var currentIndicator: StrategyGridCellIndicatorType?
     
     var globalPosition: Vector3 { return internalGlobalPosition }
     

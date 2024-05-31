@@ -5,4 +5,5 @@ import SwiftGodot
                                                         StrategySceneFlow.self,
                                                         InputReceiver.self,
                                                         StrategyGridPawnNode.self,
-                                                        ActionList.self])
+                                                        ActionList.self
+                                                       ])

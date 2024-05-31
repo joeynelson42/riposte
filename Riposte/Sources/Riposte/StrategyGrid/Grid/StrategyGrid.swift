@@ -20,6 +20,7 @@ class StrategyGrid: Node3D, SceneNode {
     
     private func updatePathIndicators() {
         guard let gridMap = state?.gridMap else { return }
+        gridMap.cellNodes.forEach { $0.hideIndicators() }
         
         var visibleNodes = [StrategyGridCell]()
         
@@ -33,8 +34,18 @@ class StrategyGrid: Node3D, SceneNode {
             visibleNodes.append(cell)
         }
         
-        gridMap.cellNodes.forEach { node in
-            node.setPathIndicator(hidden: !visibleNodes.contains( where: { $0.isEqualTo(item: node) }))
+        guard let currentActionMap = state?.currentActions else { return }
+        
+        for (index, actions) in currentActionMap {
+            guard let cell = gridMap.getCellAtIndex(index) else { continue }
+            
+            let displayPriorities = actions.map { $0.displayPriority }
+            guard let max = displayPriorities.max(),
+                  let maxIndex = displayPriorities.firstIndex(of: max),
+                  let priorityAction = actions[safe: maxIndex]
+            else { continue }
+            
+            cell.showIndicator(type: priorityAction.mapToIndicatorType)
         }
     }
     
@@ -46,16 +57,20 @@ class StrategyGrid: Node3D, SceneNode {
             self?.updatePathIndicators()
         }
         
-        store.observeState(\.gridMap) { [weak self] _ in
-            if self?.hasSnappedPawns ?? false {
-                self?.snapPawnsToGrid()
-                self?.hasSnappedPawns = true
-            }
-        }
+//        store.observeState(\.gridMap) { [weak self] _ in
+//            if self?.hasSnappedPawns ?? false {
+//                self?.snapPawnsToGrid()
+//                self?.hasSnappedPawns = true
+//            }
+//        }
 
-        store.observeState(\.hovered) { [weak self] _ in
-            self?.updatePathIndicators()
-        }
+//        store.observeState(\.hovered) { [weak self] _ in
+//            self?.updatePathIndicators()
+//        }
+        
+//        store.observeState(\.selectedCell) { [weak self] _ in
+//            self?.updatePathIndicators()
+//        }
     }
     
     private func setUpGrid(with store: StrategyGrid.NodeStore) {
@@ -65,18 +80,18 @@ class StrategyGrid: Node3D, SceneNode {
     }
     
     private func setUpActionList(with store: StrategyGrid.NodeStore) {
-        let actionListStore = store.asNodeStore(
-            for: ActionListNodeModule.self,
-            stateMap: { ActionListNodeModule.NodeState(actions: $0.currentActions) },
-            actionMap: { action in
-                switch action {
-                case .didSelectItem(let index):
-                    return .actionList(.didSelectItem(index: index))
-                }
-            }
-        )
-
-        actionList?.set(store: actionListStore)
+//        let actionListStore = store.asNodeStore(
+//            for: ActionListNodeModule.self,
+//            stateMap: { ActionListNodeModule.NodeState(actions: $0.currentActions) },
+//            actionMap: { action in
+//                switch action {
+//                case .didSelectItem(let index):
+//                    return .actionList(.didSelectItem(index: index))
+//                }
+//            }
+//        )
+//
+//        actionList?.set(store: actionListStore)
     }
     
     /// Moves pawns to the center of their corresponding grid cell on the x,z plane
@@ -89,6 +104,17 @@ class StrategyGrid: Node3D, SceneNode {
             
             let newPos = Vector3(x: cell.globalPosition.x, y: pawn.globalPosition.y, z: cell.globalPosition.z)
             pawn.setGlobalPosition(newPos)
+        }
+    }
+}
+
+fileprivate extension PawnAction {
+    var mapToIndicatorType: StrategyGridCellIndicatorType {
+        switch self {
+        case .move: .move
+        case .attack: .attack
+        case .support: .support
+        case .endTurn: .none
         }
     }
 }

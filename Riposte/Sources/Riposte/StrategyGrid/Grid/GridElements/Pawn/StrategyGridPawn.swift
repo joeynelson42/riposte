@@ -11,4 +11,6 @@ protocol StrategyGridPawn: PawnMovable, GloballyPositioned, NodeEquatable {
     
     var faction: Faction { get }
     
+    var moveDistance: Int { get }
+    
 }
