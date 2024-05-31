@@ -15,7 +15,8 @@ struct StrategyGridMap {
     
     enum MapError: Error {
         case pawnDoesNotExist
-        case indexIsNotEmpty
+        case cellIsOccupied
+        case pawnNotFound
     }
     
     private var cells: [GridIndex: StrategyGridCell]
@@ -56,13 +57,14 @@ struct StrategyGridMap {
         return getPawnAtIndex(index) != nil
     }
     
-    func getNeighbors(of cell: StrategyGridCell) -> [StrategyGridCell] {
+    private func getNeighbors(of cell: StrategyGridCell) -> [StrategyGridCell] {
         guard let index = getIndexFor(cell: cell) else { return [] }
         
-        let north = GridIndex(x: index.x, y: index.y + 1)
-        let south = GridIndex(x: index.x, y: index.y - 1)
-        let east = GridIndex(x: index.x + 1, y: index.y)
-        let west = GridIndex(x: index.x - 1, y: index.y)
+        // ex (1,1)
+        let north = GridIndex(x: index.x, y: index.y - 1) // (1,0)
+        let west = GridIndex(x: index.x - 1, y: index.y) // (0,1)
+        let east = GridIndex(x: index.x + 2, y: index.y + 1) // (3,2)
+        let south = GridIndex(x: index.x + 1, y: index.y + 2) // (2,3)
         
         let neighbors: [StrategyGridCell] = [north, south, east, west].compactMap { getCellAtIndex($0) }
         return neighbors
@@ -71,13 +73,24 @@ struct StrategyGridMap {
     func areNeighborsOccupied(cell: StrategyGridCell) -> Bool {
         guard let index = getIndexFor(cell: cell) else { return false }
         let neighbors = getNeighbors(of: cell)
-        return neighbors.reduce(false) { result, cell in
+        if neighbors.isEmpty { return false }
+        return neighbors.reduce(true) { result, cell in
             return result && isCellOccupied(cell)
         }
     }
     
     // MARK: Pawns
     var pawnNodes: [any StrategyGridPawn] { Array(pawns.values) }
+    
+    mutating func addPawn(pawn: any StrategyGridPawn, at index: GridIndex) throws {
+        guard let cell = getCellAtIndex(index), !isCellOccupied(cell) else { throw MapError.cellIsOccupied }
+        pawns[index] = pawn
+    }
+    
+    mutating func removePawn(at index: GridIndex) throws {
+        guard let pawn = getPawnAtIndex(index) else { throw MapError.pawnNotFound }
+        pawns[index] = nil
+    }
     
     func getPawnAtIndex(_ index: GridIndex) -> (any StrategyGridPawn)? {
         return pawns[index]
@@ -89,14 +102,10 @@ struct StrategyGridMap {
     
     mutating func setPawnIndex(pawn: any StrategyGridPawn, index: GridIndex) throws {
         // Verify pawn exists
-        guard let currentIndex = getIndexFor(pawn: pawn) else {
-            throw MapError.pawnDoesNotExist
-        }
+        guard let currentIndex = getIndexFor(pawn: pawn) else { throw MapError.pawnDoesNotExist }
         
         // Verify index is empty
-        guard getPawnAtIndex(index) == nil else {
-            throw MapError.indexIsNotEmpty
-        }
+        guard getPawnAtIndex(index) == nil else { throw MapError.cellIsOccupied }
         
         // Move pawn to index
         pawns[currentIndex] = nil

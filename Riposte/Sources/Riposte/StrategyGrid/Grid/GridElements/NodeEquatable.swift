@@ -6,16 +6,21 @@
 //
 
 import Foundation
+import SwiftGodot
 
 protocol NodeEquatable {
     
-    var id: ObjectIdentifier { get }
+    var nodeEquatableID: String { get }
     
     func isEqualTo(item: NodeEquatable) -> Bool
 }
 
+extension NodeEquatable where Self: Node {
+    var nodeEquatableID: String { "\(id)" }
+}
+
 extension NodeEquatable {
     func isEqualTo(item: NodeEquatable) -> Bool {
-        return item.id == self.id
+        return item.nodeEquatableID == self.nodeEquatableID
     }
 }

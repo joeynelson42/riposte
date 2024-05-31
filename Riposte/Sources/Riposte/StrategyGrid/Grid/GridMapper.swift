@@ -76,7 +76,7 @@ struct GridCellMapper {
     
     private mutating func evaluateNeighbor(_ originCell: StrategyGridCell, neighborDirection: Vector3) {
         guard let neighbor = findCellNeighbor(originCell, neighborDirection: neighborDirection),
-              let originIndex = cellPositions.first(where: { $0.value.id == originCell.id })?.key
+              let originIndex = cellPositions.first(where: { $0.value.isEqualTo(item: originCell) })?.key
         else { return }
         
         let neighborIndex = GridIndex(x: originIndex.x + Int(neighborDirection.x), y: originIndex.y + Int(neighborDirection.z))
