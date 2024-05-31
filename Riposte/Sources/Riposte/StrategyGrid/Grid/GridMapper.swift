@@ -33,6 +33,12 @@ struct GridCellMapper {
             if let pawnIndex = findPawnsNearestIndex(pawn: pawn, in: cellPositions) {
                 log("Found a pawn at index: \(pawnIndex)")
                 pawnPositions[pawnIndex] = pawn
+                
+                // Snap pawn to cell's xz position
+                if let cellPos = cellPositions[pawnIndex]?.globalPosition {
+                    let pawnSnapPos = Vector3(x: cellPos.x, y: pawn.globalPosition.y, z: cellPos.z)
+                    pawn.setGlobalPosition(pawnSnapPos)
+                }
             }
         }
         

@@ -18,12 +18,17 @@ struct StrategyGridModule: SceneModule {
         var selectedAction: PawnAction?
         var selectedCell: StrategyGridCell?
         
+        var currentActions: [PawnAction] {
+            guard let selectedCell, let cellIndex = gridMap.getIndexFor(cell: selectedCell), let actions = actionMap[cellIndex] else { return [] }
+            return actions
+        }
+        
         var activeFaction: Faction = .unknown
         var activePawns: [any StrategyGridPawn] = []
         
         var activeActionPool: FactionActionPool?
         
-        var currentActions: [GridIndex: [PawnAction]] {
+        var actionMap: [GridIndex: [PawnAction]] {
             guard let activeActionPool, let selectedPawn else { return [:] }
             let availableActions = activeActionPool.getPawnActions(selectedPawn)
             return ActionEvaluation.getPossibleActions(for: selectedPawn, on: gridMap, availableActions: availableActions)
@@ -67,8 +72,6 @@ struct StrategyGridModule: SceneModule {
 struct ActionEvaluation {
     
     static func getPossibleActions(for pawn: any StrategyGridPawn, on map: StrategyGridMap, availableActions: [PawnAction]) -> [GridIndex: [PawnAction]] {
-        log(availableActions)
-        
         guard let pawnIndex = map.getIndexFor(pawn: pawn) else { return [:] }
         
         let pathfinder = AStarPathfinder()

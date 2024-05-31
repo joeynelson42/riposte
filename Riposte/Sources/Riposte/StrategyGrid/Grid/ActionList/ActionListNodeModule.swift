@@ -12,7 +12,7 @@ import GDLasso
 struct ActionListNodeModule: NodeModule {
     
     struct NodeState {
-        var actions: [String]
+        var actions: [PawnAction]
     }
     
     enum NodeAction {

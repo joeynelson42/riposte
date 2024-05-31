@@ -21,9 +21,18 @@ final class ActionList: Control, SceneNode {
             guard let self else { return }
             self.list?.clear()
 
-            for action in actions {
-                self.list?.addItem(text: action)
+            if actions.isEmpty{
+                hide()
+                return
+            } else {
+                show()
             }
+            
+            for action in actions {
+                self.list?.addItem(text: action.title)
+            }
+            
+            self.list?.addItem(text: "Cancel")
         }
         
         list?.itemSelected.connect({ index in
