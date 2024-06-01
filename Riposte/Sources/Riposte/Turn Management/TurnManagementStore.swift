@@ -30,7 +30,10 @@ class TurnManagementStore: GDLassoStore<TurnManagementModule> {
                 if state.turnQueue.isQueueExhausted {
                     dispatchOutput(.didEndRound)
                     
-                    let newTurnQueue = TurnQueue(factionOrder: state.turnQueue.factionOrder)
+                    let previousOrder = state.turnQueue.factionOrder
+                    var newOrder = previousOrder
+                    newOrder.append(newOrder.removeFirst())
+                    let newTurnQueue = TurnQueue(factionOrder: newOrder)
                     update { $0.turnQueue = newTurnQueue }
                     dispatchOutput(.didStartRound)
                     dispatchOutput(.didStartTurn(state.activeFaction))
@@ -42,5 +45,5 @@ class TurnManagementStore: GDLassoStore<TurnManagementModule> {
             }
         }
     }
-    
+
 }

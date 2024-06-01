@@ -25,8 +25,7 @@ struct FactionActionPool {
     
     init(pawns: [any StrategyGridPawn]) {
         self.pawns = pawns
-        
-        actionPool = pawns.reduce(into: [String: [PawnAction]](), { $0[$1.nodeEquatableID] = [.move, .attack] })
+        actionPool = pawns.reduce(into: [String: [PawnAction]](), { $0[$1.nodeEquatableID] = [.move, .attack, .support] })
     }
     
     public mutating func exhaust(action: PawnAction, for pawn: any StrategyGridPawn) throws {

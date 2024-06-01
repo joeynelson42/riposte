@@ -9,5 +9,5 @@ import Foundation
 import SwiftGodot
 
 func log(_ item: Any) {
-    GD.print("\(item)")
+    GD.print("\(item)\n")
 }
