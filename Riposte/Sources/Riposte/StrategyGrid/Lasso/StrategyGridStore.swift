@@ -135,20 +135,19 @@ extension StrategyGridStore {
     private func observeTurnOutput(_ output: GDLassoStore<TurnManagementModule>.Output) {
         switch output {
         case .didStartTurn(let faction):
-            // On turn start refresh action pool and automatically select the first pawn
-            let activePawns = state.gridMap.pawnNodes.filter { $0.faction == faction && !isPawnInBattle($0) }
-            log("on turn start there are \(activePawns.count) active pawn(s)")
-            guard let activeFaction = activePawns.first?.faction else {
+            let pawnsToActivate = state.gridMap.pawnNodes.filter { $0.faction == faction && !isPawnInBattle($0) }
+            
+            // If no active pawns then end the turn, eventually this should probably allow the pawns-in-battle a chance to do aux actions (use item, etc.)
+            if pawnsToActivate.isEmpty {
                 log("no active pawns, ending turn automatically.")
                 turnStore.dispatchExternalAction(.endTurn)
-                return
-            }
-            
-            let activePool = FactionActionPool(pawns: activePawns)
-            log("setting new action pool with pawns of faction \(activeFaction)")
-            update { state in
-                state.activeActionPool = activePool
-                state.selectedPawn = activePawns.first
+            } else {
+                // On turn start refresh action pool and automatically select the first pawn
+                let activePool = FactionActionPool(pawns: pawnsToActivate)
+                update { state in
+                    state.activeActionPool = activePool
+                    state.selectedPawn = pawnsToActivate.first
+                }
             }
         case .didEndTurn(let faction):
             log("did end turn")

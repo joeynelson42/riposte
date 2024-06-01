@@ -8,6 +8,7 @@
 import Foundation
 import SwiftGodot
 
+/// `Pathfinder` that uses the A\* algorithm
 struct AStarPathfinder: Pathfinder {
     
     private class AStarNode: PathNode, Equatable {
@@ -32,22 +33,10 @@ struct AStarPathfinder: Pathfinder {
         var aStarNodes = nodes.map { AStarNode(index: $0.index) }
         aStarNodes.forEach { $0.neighbors = findNodeNeighbors($0, nodes: aStarNodes) }
         
-        guard let start = getNodeAtIndex(startNode.index, nodes: aStarNodes) else {
-            log("No start node found")
-            return nil
-        }
-        
-        guard let end = getNodeAtIndex(endNode.index, nodes: aStarNodes)
-        else {
-            log("No end node found")
-            return nil
-        }
-        
-        guard let pathNodes = findPath(in: aStarNodes, startNode: start, endNode: end)
-        else {
-            log("No path found")
-            return nil
-        }
+        guard let start = getNodeAtIndex(startNode.index, nodes: aStarNodes), 
+              let end = getNodeAtIndex(endNode.index, nodes: aStarNodes),
+              let pathNodes = findPath(in: aStarNodes, startNode: start, endNode: end)
+        else { return nil }
         
         return Path(nodes: pathNodes, cost: 0)
     }
