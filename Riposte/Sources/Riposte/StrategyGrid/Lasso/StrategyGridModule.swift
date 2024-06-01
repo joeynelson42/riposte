@@ -102,38 +102,30 @@ struct ActionEvaluation {
                 continue
             }
             
+            let isNeighboringCell = path.nodes.count == 2
             let canMove = availableActions.contains(.move)
-            guard let cellOccupant else {
-                if canMove {
-                    gridActions[cellIndex]?.append(.move)
-                }
-                continue
+            let isWithinMovementRange = canMove || isNeighboringCell
+            
+            let gridActionData = GridActionData(pawnFaction: pawn.faction, occupyingFaction: cellOccupant?.faction, isWithinMovementRange: isWithinMovementRange)
+            var possibleActions = availableActions.filter { $0.evaluatePossibility(from: gridActionData) }
+            
+            // If we can move and the targetCell isn't neighboring the support and attack actions should be compounded with the move action
+            if canMove && !isNeighboringCell {
+                compoundAction(action: .attack, with: .move, in: &possibleActions)
+                compoundAction(action: .support, with: .move, in: &possibleActions)                
             }
             
-            let isNeighboringCell = path.nodes.count == 2
-            for action in availableActions {
-                switch action {
-                case .attack:
-                    guard cellOccupant.faction != pawn.faction else { continue }
-                    if !isNeighboringCell && canMove {
-                        gridActions[cellIndex]?.append(.compoundAction(.move, .attack))
-                    } else if isNeighboringCell {
-                        gridActions[cellIndex]?.append(.attack)
-                    }
-                case .support:
-                    guard cellOccupant.faction == pawn.faction else { continue }
-                    if !isNeighboringCell && canMove {
-                        gridActions[cellIndex]?.append(.compoundAction(.move, .support))
-                    } else if isNeighboringCell {
-                        gridActions[cellIndex]?.append(.support)
-                    }
-                default:
-                    break
-                }
-            }
+            gridActions[cellIndex] = possibleActions
         }
         
         return gridActions
+    }
+    
+    static func compoundAction(action: PawnAction, with additionalAction: PawnAction, in actions: inout [PawnAction]) {
+        guard let actionIndex = actions.firstIndex(of: action) else { return }
+        
+        actions.remove(at: actionIndex)
+        actions.insert(.compoundAction(additionalAction, action), at: actionIndex)
     }
     
 }

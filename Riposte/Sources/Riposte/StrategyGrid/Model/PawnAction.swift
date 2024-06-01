@@ -31,4 +31,19 @@ indirect enum PawnAction: Equatable {
         case .compoundAction(let firstAction, let secondAction): max(firstAction.displayPriority, secondAction.displayPriority)
         }
     }
+
+    func evaluatePossibility(from data: GridActionData) -> Bool {
+        switch self {
+        case .move:
+            return data.isWithinMovementRange && !data.isOccupied
+        case .attack:
+            guard let occupyingFaction = data.occupyingFaction else { return false }
+            return data.isWithinMovementRange && occupyingFaction != data.pawnFaction
+        case .support:
+            guard let occupyingFaction = data.occupyingFaction else { return false }
+            return data.isWithinMovementRange && occupyingFaction == data.pawnFaction
+        default:
+            return false
+        }
+    }
 }
