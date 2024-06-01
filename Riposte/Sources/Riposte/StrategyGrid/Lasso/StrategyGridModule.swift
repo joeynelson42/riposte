@@ -37,6 +37,8 @@ struct StrategyGridModule: SceneModule {
         
         var hovered: StrategyGridCell?
         var hoveredPath: Path?        
+        
+        var stagedBattles = [GridIndex: StagedBattle]()
     }
     
     enum ExternalAction {
@@ -50,6 +52,7 @@ struct StrategyGridModule: SceneModule {
         enum Turn {
             case didEndTurn(Faction)
             case didStartTurn(Faction)
+            case didEndRound
         }
         case turn(Turn)
     }
@@ -66,6 +69,7 @@ struct StrategyGridModule: SceneModule {
     enum Output {
         case didInitializeGrid(StrategyGridMap)
         case didExhaustAllActivePawns
+        case didEndRoundWithBattles([StagedBattle])
     }
 }
 

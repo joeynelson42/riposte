@@ -70,10 +70,9 @@ final class StrategyGridMapTests: XCTestCase {
         try? map.addPawn(pawn: MockPawn(), at: targetPawnIndex)
         
         // When
-        try? map.addPawn(pawn: MockPawn(), at: GridIndex(x: 0, y: 1))
-        try? map.addPawn(pawn: MockPawn(), at: GridIndex(x: 1, y: 0))
-        try? map.addPawn(pawn: MockPawn(), at: GridIndex(x: 2, y: 3))
-        try? map.addPawn(pawn: MockPawn(), at: GridIndex(x: 3, y: 2))
+        targetPawnIndex.neighboringIndices.forEach { 
+            try? map.addPawn(pawn: MockPawn(), at: $0)
+        }
                 
         // Then
         guard let cell = map.getCellAtIndex(targetPawnIndex) else {

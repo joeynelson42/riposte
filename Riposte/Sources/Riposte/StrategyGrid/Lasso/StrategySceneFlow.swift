@@ -43,6 +43,8 @@ extension StrategySceneFlow {
             
         case .didExhaustAllActivePawns:
             turnStore.dispatchExternalAction(.endTurn)
+        case .didEndRoundWithBattles(let battles):
+            log("Ended round with \(battles.count) battle(s)")
         }
     }
 }
@@ -86,7 +88,7 @@ extension StrategySceneFlow {
         case .didStartRound:
             log("did start round")
         case .didEndRound:
-            log("did end round")
+            gridStore.dispatchExternalAction(.turn(.didEndRound))
         }
     }
 }

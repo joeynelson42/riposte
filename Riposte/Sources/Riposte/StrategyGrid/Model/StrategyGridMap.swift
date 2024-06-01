@@ -59,15 +59,7 @@ struct StrategyGridMap {
     
     private func getNeighbors(of cell: StrategyGridCell) -> [StrategyGridCell] {
         guard let index = getIndexFor(cell: cell) else { return [] }
-        
-        // ex (1,1)
-        let north = GridIndex(x: index.x, y: index.y - 1) // (1,0)
-        let west = GridIndex(x: index.x - 1, y: index.y) // (0,1)
-        let east = GridIndex(x: index.x + 2, y: index.y + 1) // (3,2)
-        let south = GridIndex(x: index.x + 1, y: index.y + 2) // (2,3)
-        
-        let neighbors: [StrategyGridCell] = [north, south, east, west].compactMap { getCellAtIndex($0) }
-        return neighbors
+        return index.neighboringIndices.compactMap { getCellAtIndex($0) }
     }
     
     func areNeighborsOccupied(cell: StrategyGridCell) -> Bool {

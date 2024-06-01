@@ -96,6 +96,10 @@ transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 4.5, 2.08165e-12, 4.5)
 factionValue = 1
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.502308, 0.0513873, 0.390915)
 
+[node name="StrategyGridPawnNode2" parent="StrategySceneFlow/StrategyGrid" instance=ExtResource("2_hm4v2")]
+factionValue = 1
+transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 1.50486, 0.0513868, 0.494698)
+
 [node name="StrategyGridPawnNode3" parent="StrategySceneFlow/StrategyGrid" instance=ExtResource("2_hm4v2")]
 transform = Transform3D(1, 0, 0, 0, 1, 0, 0, 0, 1, 0.532923, 0.0513878, 2.58106)
 

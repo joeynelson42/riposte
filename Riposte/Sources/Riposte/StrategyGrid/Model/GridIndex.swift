@@ -39,6 +39,8 @@ struct GridIndex: Hashable {
         y = 0
     }
     
+    var neighboringIndices: [GridIndex] { Direction.allCases.map { self + $0.value } }
+
     static func +(lhs: GridIndex, rhs: GridIndex) -> GridIndex {
         return GridIndex(x: lhs.x + rhs.x, y: lhs.y + rhs.y)
     }

@@ -84,6 +84,9 @@ class StrategyGridStore: GDLassoStore<StrategyGridModule> {
                 state.activeActionPool = activePool
                 state.selectedPawn = activePawns.first
             }
+        case .didEndRound:
+            dispatchOutput(.didEndRoundWithBattles(Array(state.stagedBattles.values)))
+            update { $0.stagedBattles = [:] }
         }
     }
     
@@ -137,10 +140,10 @@ extension StrategyGridStore {
         switch action {
         case .move:
             await executeMove(actingPawn: actingPawn, targetCell: targetCell)
-        case .attack:
-            log("attack!")
-        case .support:
-            log("support!")
+        case .support, .attack:
+            guard let targetPawn = state.gridMap.getPawnAtIndex(cellIndex) else { return }
+            addParticipantToBattle(at: cellIndex, targetPawn: targetPawn, actingPawn: actingPawn, actingIndex: pawnIndex)
+            update { $0.activeActionPool?.exhaust(pawn: actingPawn) }
         case .endTurn:
             update { $0.activeActionPool?.exhaust(pawn: actingPawn) }
         case .compoundAction(let first, let second):
@@ -196,6 +199,30 @@ extension StrategyGridStore {
             } catch {
                 log("failed to set pawn's index after moving with error: \(error)")
             }
+        }
+    }
+    
+    func addParticipantToBattle(at index: GridIndex, targetPawn: any StrategyGridPawn, actingPawn: any StrategyGridPawn, actingIndex: GridIndex) {
+        guard let direction = GridIndex.Direction.allCases.first(where: { actingIndex == index + $0.value }) else {
+            log("Attempted to add participant to a non-neighboring battle.")
+            return
+        }
+        
+        let actionType: StagedBattle.Participant.ActionType = targetPawn.faction == actingPawn.faction ? .support : .attack
+        let participant = StagedBattle.Participant(pawn: actingPawn, direction: direction, actionType: actionType)
+        
+        if var existingBattle = state.stagedBattles[index] {
+            do {
+                try existingBattle.addParticipant(participant)
+                update { $0.stagedBattles[index] = existingBattle }
+                log("added participant to existing staged battle")
+            } catch {
+                log("failed to participant to existing staged battle with error: \(error)")
+            }
+        } else {
+            let newBattle = StagedBattle(targetPawn: targetPawn, initialParticipant: participant)
+            update { $0.stagedBattles[index] = newBattle }
+            log("added new staged battle")
         }
     }
 }
