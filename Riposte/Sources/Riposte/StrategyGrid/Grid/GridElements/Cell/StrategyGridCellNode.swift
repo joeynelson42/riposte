@@ -15,8 +15,9 @@ class StrategyGridCellNode: StaticBody3D, StrategyGridCell {
     @SceneTree(path: "MoveIndicator") private var moveIndicator: Node3D?
     @SceneTree(path: "AttackIndicator") private var attackIndicator: Node3D?
     @SceneTree(path: "SupportIndicator") private var supportIndicator: Node3D?
+    @SceneTree(path: "SelectionIndicator") private var selectionIndicator: Node3D?
     
-    private lazy var indicators: [Node3D?] = [pathIndicator, moveIndicator, attackIndicator, supportIndicator]
+    private lazy var indicators: [Node3D?] = [pathIndicator, moveIndicator, attackIndicator, supportIndicator, selectionIndicator]
     
     var world3D: World3D? { getWorld3d() }
     
@@ -37,6 +38,8 @@ class StrategyGridCellNode: StaticBody3D, StrategyGridCell {
             supportIndicator?.show()
         case .path:
             pathIndicator?.show()
+        case .selection:
+            selectionIndicator?.show()
         }
     }
     

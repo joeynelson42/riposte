@@ -24,9 +24,9 @@ class StrategyGrid: Node3D, SceneNode {
             self?.updatePathIndicators()
         }
 
-//        store.observeState(\.hovered) { [weak self] _ in
-//            self?.updatePathIndicators()
-//        }
+        store.observeState(\.hovered) { [weak self] _ in
+            self?.updatePathIndicators()
+        }
     }
     
     private func setUpGrid(with store: StrategyGrid.NodeStore) {
@@ -54,16 +54,19 @@ class StrategyGrid: Node3D, SceneNode {
         guard let gridMap = state?.gridMap else { return }
         gridMap.cellNodes.forEach { $0.hideIndicators() }
         
-        var visibleNodes = [StrategyGridCell]()
-        
         if let hoveredCell = state?.hovered {
-            visibleNodes.append(hoveredCell)
+            hoveredCell.showIndicator(type: .selection)
+        }
+        
+        if let hoveredPath = state?.hoveredPath {
+            let hoveredPathCells = hoveredPath.nodes.compactMap { state?.gridMap.getCellAtIndex($0.index) }
+            hoveredPathCells.forEach { $0.showIndicator(type: .path) }
         }
         
         if let selectedPawn = state?.selectedPawn,
            let pawnIndex = state?.gridMap.getIndexFor(pawn: selectedPawn),
            let cell = state?.gridMap.getCellAtIndex(pawnIndex) {
-            visibleNodes.append(cell)
+            cell.showIndicator(type: .path)
         }
         
         guard let currentActionMap = state?.actionMap else { return }

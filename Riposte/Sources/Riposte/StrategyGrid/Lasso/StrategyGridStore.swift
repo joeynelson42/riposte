@@ -73,29 +73,9 @@ class StrategyGridStore: GDLassoStore<StrategyGridModule> {
         case .didClickCell(let cell):
             handleDidClickCell(cell)
         case .didHoverCell(let cell):
-//            handleDidHoverCell(cell)
-            break
+            update { $0.hovered = cell }
         case .didEndHovering:
-            break
-        }
-    }
-    
-    private func handleDidHoverCell(_ cell: StrategyGridCell) {
-        update { $0.hovered = cell }
-        
-        guard let selectedPawn = state.selectedPawn,
-              let pawnIndex = state.gridMap.getIndexFor(pawn: selectedPawn),
-              let hoveredIndex = state.gridMap.getIndexFor(cell: cell),
-              let hoveredPath = findPathBetween(start: pawnIndex, end: hoveredIndex)
-        else { return }
-        
-        update { $0.hoveredPath = hoveredPath }
-    }
-    
-    private func handleDidEndHovering() {
-        update {
-            $0.hovered = nil
-            $0.hoveredPath = nil
+            update { $0.hovered = nil }
         }
     }
     

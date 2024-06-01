@@ -36,7 +36,20 @@ struct StrategyGridModule: SceneModule {
         }
         
         var hovered: StrategyGridCell?
-        var hoveredPath: Path?        
+        var hoveredPath: Path? {
+            guard let selectedPawn,
+                  let hovered,
+                  let pawnIndex = gridMap.getIndexFor(pawn: selectedPawn),
+                  let hoveredIndex = gridMap.getIndexFor(cell: hovered)
+            else { return nil }
+            
+            if let path = AStarPathfinder().findPath(in: gridMap, startIndex: pawnIndex, endIndex: hoveredIndex) {
+                return path
+            } else {
+                log("no path found to hovered")
+                return nil
+            }
+        }
         
         var stagedBattles = [GridIndex: StagedBattle]()
     }
