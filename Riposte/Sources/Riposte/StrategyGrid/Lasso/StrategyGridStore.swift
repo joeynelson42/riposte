@@ -77,10 +77,12 @@ class StrategyGridStore: GDLassoStore<StrategyGridModule> {
         case .didEndTurn(let faction):
             break
         case .didStartTurn(let faction):
+            // On turn start refresh action pool and automatically select the first pawn
             let activePawns = state.gridMap.pawnNodes.filter { $0.faction == faction }
             let activePool = FactionActionPool(pawns: activePawns)
             update { state in
                 state.activeActionPool = activePool
+                state.selectedPawn = activePawns.first
             }
         }
     }
@@ -149,9 +151,14 @@ extension StrategyGridStore {
         // Exhaust action
         update { state in
             do {
-                try state.activeActionPool?.exhaust(action: action, for: actingPawn)
+                if case .compoundAction = action {
+                    log("Compound action complete, no action exhaustion needed.")
+                } else {
+                    try state.activeActionPool?.exhaust(action: action, for: actingPawn)
+                    log("Exhausted pawn's \(action.title) action")
+                }
             } catch {
-                log("Failed to exhaust pawn's grid action with error: \(error)")
+                log("Failed to exhaust pawn's \(action.title) action with error: \(error)")
             }
         }
     }
@@ -160,16 +167,32 @@ extension StrategyGridStore {
     @MainActor
     private func executeMove(actingPawn: any StrategyGridPawn, targetCell: StrategyGridCell) async {
         guard let pawnIndex = state.gridMap.getIndexFor(pawn: actingPawn), 
-              let cellIndex = state.gridMap.getIndexFor(cell: targetCell),
-              let path = findPathBetween(start: pawnIndex, end: cellIndex)
+              let cellIndex = state.gridMap.getIndexFor(cell: targetCell)
         else { return }
+        
+        let pathfinder = AStarPathfinder()
+        let startNode = SimplePathNode(index: pawnIndex)
+        let endNode = SimplePathNode(index: cellIndex)
+        var nodes = state.gridMap.unoccupiedPathNodes + [startNode]
+        
+        // this and the check after the path is silly, find a better way
+        if state.gridMap.isCellOccupied(targetCell) {
+            nodes += [endNode]
+        }
+        
+        guard var path = pathfinder.findPath(in: nodes, startNode: startNode, endNode: endNode) else { return }
+        
+        if state.gridMap.isCellOccupied(targetCell) {
+            path.nodes = path.nodes.dropLast()
+        }
         
         let globalSteps = path.nodes.compactMap { state.gridMap.getCellAtIndex($0.index)?._globalPosition }
         await actingPawn.move(along: GlobalPath(steps: globalSteps))
         
         update { state in
             do {
-                try state.gridMap.setPawnIndex(pawn: actingPawn, index: cellIndex)
+                let restingIndex = path.nodes.last?.index ?? cellIndex
+                try state.gridMap.setPawnIndex(pawn: actingPawn, index: restingIndex)
             } catch {
                 log("failed to set pawn's index after moving with error: \(error)")
             }
