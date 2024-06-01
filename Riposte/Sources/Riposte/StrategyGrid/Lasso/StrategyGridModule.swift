@@ -102,11 +102,7 @@ struct ActionEvaluation {
                 continue
             }
             
-            var isNeighboringCell = path.nodes.count == 2
-            var canMove = availableActions.contains(.move)
-            var canAttack = availableActions.contains(.attack)
-            var canSupport = availableActions.contains(.support)
-            
+            let canMove = availableActions.contains(.move)
             guard let cellOccupant else {
                 if canMove {
                     gridActions[cellIndex]?.append(.move)
@@ -114,17 +110,25 @@ struct ActionEvaluation {
                 continue
             }
             
-            if isNeighboringCell {
-                if cellOccupant.faction == pawn.faction && canSupport {
-                    gridActions[cellIndex]?.append(.support)
-                } else if canAttack {
-                    gridActions[cellIndex]?.append(.attack)
-                }
-            } else {
-                if cellOccupant.faction == pawn.faction && canSupport {
-                    gridActions[cellIndex]?.append(.compoundAction(.move, .support))
-                } else if canAttack {
-                    gridActions[cellIndex]?.append(.compoundAction(.move, .attack))
+            let isNeighboringCell = path.nodes.count == 2
+            for action in availableActions {
+                switch action {
+                case .attack:
+                    guard cellOccupant.faction != pawn.faction else { continue }
+                    if !isNeighboringCell && canMove {
+                        gridActions[cellIndex]?.append(.compoundAction(.move, .attack))
+                    } else if isNeighboringCell {
+                        gridActions[cellIndex]?.append(.attack)
+                    }
+                case .support:
+                    guard cellOccupant.faction == pawn.faction else { continue }
+                    if !isNeighboringCell && canMove {
+                        gridActions[cellIndex]?.append(.compoundAction(.move, .support))
+                    } else if isNeighboringCell {
+                        gridActions[cellIndex]?.append(.support)
+                    }
+                default:
+                    break
                 }
             }
         }
