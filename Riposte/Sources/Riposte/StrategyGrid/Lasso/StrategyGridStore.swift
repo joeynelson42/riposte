@@ -44,7 +44,10 @@ class StrategyGridStore: GDLassoStore<StrategyGridModule> {
                 }
             } else if index == state.currentActions.count {
                 // Cancel
-                update { $0.selectedCell = nil }
+                update { state in
+                    state.selectedCell = nil
+                    state.selectedPawn = nil
+                }
             }
         }
     }
@@ -78,15 +81,20 @@ class StrategyGridStore: GDLassoStore<StrategyGridModule> {
             break
         case .didStartTurn(let faction):
             // On turn start refresh action pool and automatically select the first pawn
-            let activePawns = state.gridMap.pawnNodes.filter { $0.faction == faction }
+            let activePawns = state.gridMap.pawnNodes.filter { $0.faction == faction && !isPawnInBattle($0) }
+            if activePawns.isEmpty {
+                dispatchOutput(.didExhaustAllActivePawns)
+            }
+            
             let activePool = FactionActionPool(pawns: activePawns)
             update { state in
                 state.activeActionPool = activePool
                 state.selectedPawn = activePawns.first
             }
         case .didEndRound:
-            dispatchOutput(.didEndRoundWithBattles(Array(state.stagedBattles.values)))
+            let battles = state.stagedBattles
             update { $0.stagedBattles = [:] }
+            dispatchOutput(.didEndRoundWithBattles(Array(battles.values)))
         }
     }
     
@@ -125,6 +133,15 @@ class StrategyGridStore: GDLassoStore<StrategyGridModule> {
         let startNode = SimplePathNode(index: start)
         let endNode = SimplePathNode(index: end)
         return pathfinder.findPath(in: state.gridMap.unoccupiedPathNodes + [startNode], startNode: startNode, endNode: endNode)
+    }
+    
+    private func isPawnInBattle(_ pawn: any StrategyGridPawn) -> Bool {
+        for (index, battle) in state.stagedBattles {
+            if battle.targetPawn.isEqualTo(item: pawn) || !battle.participants.filter({ $0.pawn.isEqualTo(item: pawn) }).isEmpty {
+                return true
+            }
+        }
+        return false
     }
 }
 
@@ -255,6 +272,14 @@ extension StrategyGridStore {
         
         if let selectedPawn = state.selectedPawn {
             update { $0.selectedCell = cell }
+            
+            if state.currentActions.isEmpty && occupant.faction == state.activeFaction {
+                update { state in
+                    state.selectedCell = nil
+                    state.selectedPawn = occupant
+                }
+            }
+            
         } else if occupant.faction == state.activeFaction {
             log("No active pawn. Selected active pawn")
             update { $0.selectedPawn = occupant }
