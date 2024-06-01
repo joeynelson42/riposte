@@ -17,6 +17,9 @@ struct FactionActionPool {
     
     var pawns: [any StrategyGridPawn]
     
+    /// Active pawns are those with any actions remaining
+    var activePawns: [any StrategyGridPawn] { pawns.filter { !(actionPool[$0.nodeEquatableID]?.isEmpty ?? true) } }
+    
     private var actionPool: ActionPool
     private let poolQueue = DispatchQueue(label: "action-pool-sync-queue", target: .global())
     
@@ -31,8 +34,12 @@ struct FactionActionPool {
         guard let actionIndex = actions.firstIndex(of: action) else { throw FactionActionPoolError.actionUnavailable }
         actions.remove(at: actionIndex)
         var newPool = actionPool
-        newPool[pawn.nodeEquatableID] = actions
+        newPool[pawn.nodeEquatableID] = actions.isEmpty ? nil : actions
         update(actionPool: newPool)
+    }
+    
+    public mutating func exhaust(pawn: any StrategyGridPawn) {
+        actionPool[pawn.nodeEquatableID] = nil
     }
     
     public func getPawnActions(_ pawn: any StrategyGridPawn) -> [PawnAction] {

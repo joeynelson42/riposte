@@ -39,8 +39,8 @@ final class ActionList: Control, SceneNode {
             store.dispatchInternalAction(.didSelectItem(index: Int(index)))
         })
         
-        list?.itemClicked.connect({ index,_,_ in
-            store.dispatchInternalAction(.didSelectItem(index: Int(index)))
-        })
+//        list?.itemClicked.connect({ index,_,_ in
+//            store.dispatchInternalAction(.didSelectItem(index: Int(index)))
+//        })
     }
 }

@@ -23,8 +23,9 @@ struct StrategyGridModule: SceneModule {
             return actions
         }
         
-        var activeFaction: Faction = .unknown
-        var activePawns: [any StrategyGridPawn] = []
+        var activeFaction: Faction { activeActionPool?.pawns.first?.faction ?? .unknown }
+        
+        var activePawns: [any StrategyGridPawn] { activeActionPool?.activePawns ?? [] }
         
         var activeActionPool: FactionActionPool?
         
@@ -68,7 +69,7 @@ struct StrategyGridModule: SceneModule {
     }
 }
 
-// Temp solution
+// Very temp very ugly solution
 struct ActionEvaluation {
     
     static func getPossibleActions(for pawn: any StrategyGridPawn, on map: StrategyGridMap, availableActions: [PawnAction]) -> [GridIndex: [PawnAction]] {
@@ -102,15 +103,29 @@ struct ActionEvaluation {
             }
             
             var isNeighboringCell = path.nodes.count == 2
+            var canMove = availableActions.contains(.move)
+            var canAttack = availableActions.contains(.attack)
+            var canSupport = availableActions.contains(.support)
             
-            if let cellOccupant {
-                if cellOccupant.faction == pawn.faction {
-                    gridActions[cellIndex]?.append(isNeighboringCell ? .support : .compoundAction(.move, .support))
-                } else {
-                    gridActions[cellIndex]?.append(isNeighboringCell ? .attack : .compoundAction(.move, .attack))
+            guard let cellOccupant else {
+                if canMove {
+                    gridActions[cellIndex]?.append(.move)
+                }
+                continue
+            }
+            
+            if isNeighboringCell {
+                if cellOccupant.faction == pawn.faction && canSupport {
+                    gridActions[cellIndex]?.append(.support)
+                } else if canAttack {
+                    gridActions[cellIndex]?.append(.attack)
                 }
             } else {
-                gridActions[cellIndex]?.append(.move)
+                if cellOccupant.faction == pawn.faction && canSupport {
+                    gridActions[cellIndex]?.append(.compoundAction(.move, .support))
+                } else if canAttack {
+                    gridActions[cellIndex]?.append(.compoundAction(.move, .attack))
+                }
             }
         }
         

@@ -25,9 +25,22 @@ class StrategyGridStore: GDLassoStore<StrategyGridModule> {
     private func handleActionList(action: StrategyGridModule.InternalAction.ActionList) {
         switch action {
         case .didSelectItem(index: let index):
+            log("did select index \(index)")
+            
             if let action = state.currentActions[safe: index], let selectedPawn = state.selectedPawn, let targetCell = state.selectedCell {
                 Task {
                     await execute(action: action, actingPawn: selectedPawn, targetCell: targetCell)
+                    
+                    // Deselect cell and pawn
+                    update { state in
+                        state.selectedPawn = nil
+                        state.selectedCell = nil
+                    }
+                    
+                    // If no more active pawns, inform the flow
+                    if state.activePawns.isEmpty {
+                        dispatchOutput(.didExhaustAllActivePawns)
+                    }
                 }
             } else if index == state.currentActions.count {
                 // Cancel
@@ -62,13 +75,11 @@ class StrategyGridStore: GDLassoStore<StrategyGridModule> {
     private func handleTurn(action: StrategyGridModule.ExternalAction.Turn) {
         switch action {
         case .didEndTurn(let faction):
-            update { $0.activePawns = [] }
+            break
         case .didStartTurn(let faction):
             let activePawns = state.gridMap.pawnNodes.filter { $0.faction == faction }
             let activePool = FactionActionPool(pawns: activePawns)
             update { state in
-                state.activeFaction = faction
-                state.activePawns = activePawns
                 state.activeActionPool = activePool
             }
         }
@@ -125,11 +136,11 @@ extension StrategyGridStore {
         case .move:
             await executeMove(actingPawn: actingPawn, targetCell: targetCell)
         case .attack:
-            break
+            log("attack!")
         case .support:
-            break
+            log("support!")
         case .endTurn:
-            break
+            update { $0.activeActionPool?.exhaust(pawn: actingPawn) }
         case .compoundAction(let first, let second):
             await execute(action: first, actingPawn: actingPawn, targetCell: targetCell)
             await execute(action: second, actingPawn: actingPawn, targetCell: targetCell)
@@ -143,12 +154,6 @@ extension StrategyGridStore {
                 log("Failed to exhaust pawn's grid action with error: \(error)")
             }
         }
-        
-        // Deselect cell and pawn
-        update { state in
-            state.selectedPawn = nil
-            state.selectedCell = nil
-        }
     }
     
     /// Moves the given pawn to the given cell asynchronously
@@ -161,16 +166,20 @@ extension StrategyGridStore {
         
         let globalSteps = path.nodes.compactMap { state.gridMap.getCellAtIndex($0.index)?._globalPosition }
         await actingPawn.move(along: GlobalPath(steps: globalSteps))
+        
+        update { state in
+            do {
+                try state.gridMap.setPawnIndex(pawn: actingPawn, index: cellIndex)
+            } catch {
+                log("failed to set pawn's index after moving with error: \(error)")
+            }
+        }
     }
 }
 
 // MARK: Cell Selection
 extension StrategyGridStore {
-    
-    private func isPawnActive(_ pawn: any StrategyGridPawn) -> Bool {
-        return state.activePawns.contains(where: { $0.isEqualTo(item: pawn) })
-    }
-    
+
     private func handleDidClickCell(_ cell: StrategyGridCell) {
         guard let gridIndex = state.gridMap.getIndexFor(cell: cell) else { return }
         log("Did click cell at \(gridIndex)")
@@ -186,30 +195,6 @@ extension StrategyGridStore {
         if let selectedPawn = state.selectedPawn {
             log("Did click empty cell with selected pawn")
             update { $0.selectedCell = cell }
-            
-//            guard let start = state.gridMap.getIndexFor(pawn: selectedPawn),
-//                  let end = state.gridMap.getIndexFor(cell: cell),
-//                  let path = findPathBetween(start: start, end: end)
-//            else { return }
-            
-//            update { $0.currentActions = ["Move"] }
-//            
-//            let globalSteps = path.nodes.compactMap { state.gridMap.getCellAtIndex($0.index)?.globalPosition }
-//            
-//            Task {
-//                await selectedPawn.move(along: GlobalPath(steps: globalSteps))
-//                
-//                update { [weak self] state in
-//                    do {
-//                        try state.gridMap.setPawnIndex(pawn: selectedPawn, index: end)
-//                        state.selectedPawn = nil
-//                    } catch {
-//                        log(error)
-//                    }
-//                }
-//                
-//                exhaustPawn(selectedPawn)
-//            }
         } else {
             log("Did click empty cell, no selected pawn")
         }
@@ -220,39 +205,11 @@ extension StrategyGridStore {
         
         if let selectedPawn = state.selectedPawn {
             update { $0.selectedCell = cell }
-        } else if isPawnActive(occupant) {
+        } else if occupant.faction == state.activeFaction {
             log("No active pawn. Selected active pawn")
             update { $0.selectedPawn = occupant }
         } else {
             log("No active pawn. Selected inactive pawn")
         }
     }
-    
-//    private func exhaustPawn(_ pawn: any StrategyGridPawn) {
-//        var activePawns = state.activePawns
-//        activePawns.removeAll(where: { $0.isEqualTo(item: pawn) })
-//        update { [weak self] state in
-//            state.activePawns = activePawns
-//            if state.activePawns.isEmpty {
-//                self?.dispatchOutput(.didExhaustAllActivePawns)
-//            }
-//        }
-//    }
 }
-
-/*
- 
- REVISED
- 1. Turn starts
- 2. User selects active pawn
- 3. Store evaluates possible actions
- 4. Store displays moveable tiles as blue and attackable tiles as red and supportable tiles as green, other tiles have no indication
- 5. User selects valid cell
- 6. Store evaluates which actions are possible at selected cell
- 7. Displays possible actions in UI
- 8. User selects action
- 9. Store state now has selectedPawn and selectedAction
- 10. Store executes the selectedAction on the selectedCell
- 11. Store repeats steps 3-10 until no more actions are left or turn is explicitly ended by user or selects another pawn
-
- */
