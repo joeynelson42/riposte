@@ -48,13 +48,6 @@ struct StrategyGridModule: SceneModule {
             case didEndHovering
         }
         case input(Input)
-        
-        enum Turn {
-            case didEndTurn(Faction)
-            case didStartTurn(Faction)
-            case didEndRound
-        }
-        case turn(Turn)
     }
     
     enum InternalAction {
@@ -67,8 +60,6 @@ struct StrategyGridModule: SceneModule {
     }
     
     enum Output {
-        case didInitializeGrid(StrategyGridMap)
-        case didExhaustAllActivePawns
         case didEndRoundWithBattles([StagedBattle])
     }
 }

@@ -25,6 +25,8 @@ class TurnManagementStore: GDLassoStore<TurnManagementModule> {
                 try state.turnQueue.endTurn()
                 let newCurrentFaction = state.activeFaction
 
+                dispatchOutput(.didEndTurn(previousFaction))
+                
                 if state.turnQueue.isQueueExhausted {
                     dispatchOutput(.didEndRound)
                     
@@ -33,7 +35,6 @@ class TurnManagementStore: GDLassoStore<TurnManagementModule> {
                     dispatchOutput(.didStartRound)
                     dispatchOutput(.didStartTurn(state.activeFaction))
                 } else {
-                    dispatchOutput(.didEndTurn(previousFaction))
                     dispatchOutput(.didStartTurn(newCurrentFaction))
                 }
             } catch {

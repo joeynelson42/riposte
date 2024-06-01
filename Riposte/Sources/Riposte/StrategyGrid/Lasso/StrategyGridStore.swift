@@ -11,6 +11,13 @@ import SwiftGodot
 
 class StrategyGridStore: GDLassoStore<StrategyGridModule> {
     
+    private let turnStore = TurnManagementStore(with: .init(factions: []))
+    
+    required init(with initialState: GDLassoStore<StrategyGridModule>.State) {
+        super.init(with: initialState)
+        turnStore.observeOutput(observeTurnOutput(_:))
+    }
+    
     // MARK: Internal
     
     override func handleAction(_ internalaAction: GDLassoStore<StrategyGridModule>.InternalAction) {
@@ -39,7 +46,7 @@ class StrategyGridStore: GDLassoStore<StrategyGridModule> {
                     
                     // If no more active pawns, inform the flow
                     if state.activePawns.isEmpty {
-                        dispatchOutput(.didExhaustAllActivePawns)
+                        turnStore.dispatchExternalAction(.endTurn)
                     }
                 }
             } else if index == state.currentActions.count {
@@ -58,8 +65,6 @@ class StrategyGridStore: GDLassoStore<StrategyGridModule> {
         switch externalAction {
         case .input(let inputAction):
             handleInput(action: inputAction)
-        case .turn(let turnAction):
-            handleTurn(action: turnAction)
         }
     }
     
@@ -72,29 +77,6 @@ class StrategyGridStore: GDLassoStore<StrategyGridModule> {
             break
         case .didEndHovering:
             break
-        }
-    }
-    
-    private func handleTurn(action: StrategyGridModule.ExternalAction.Turn) {
-        switch action {
-        case .didEndTurn(let faction):
-            break
-        case .didStartTurn(let faction):
-            // On turn start refresh action pool and automatically select the first pawn
-            let activePawns = state.gridMap.pawnNodes.filter { $0.faction == faction && !isPawnInBattle($0) }
-            if activePawns.isEmpty {
-                dispatchOutput(.didExhaustAllActivePawns)
-            }
-            
-            let activePool = FactionActionPool(pawns: activePawns)
-            update { state in
-                state.activeActionPool = activePool
-                state.selectedPawn = activePawns.first
-            }
-        case .didEndRound:
-            let battles = state.stagedBattles
-            update { $0.stagedBattles = [:] }
-            dispatchOutput(.didEndRoundWithBattles(Array(battles.values)))
         }
     }
     
@@ -122,7 +104,9 @@ class StrategyGridStore: GDLassoStore<StrategyGridModule> {
             var mapper = GridCellMapper()
             let gridMap = try mapper.createMap(from: cells, pawns: pawns)
             update { $0.gridMap = gridMap }
-            dispatchOutput(.didInitializeGrid(gridMap))
+            
+            let factions = Set(gridMap.pawnNodes.map { $0.faction })
+            turnStore.dispatchExternalAction(.initialize(Array(factions)))
         } catch {
             log(error)
         }
@@ -142,6 +126,39 @@ class StrategyGridStore: GDLassoStore<StrategyGridModule> {
             }
         }
         return false
+    }
+}
+
+// MARK: Turns
+extension StrategyGridStore {
+    
+    private func observeTurnOutput(_ output: GDLassoStore<TurnManagementModule>.Output) {
+        switch output {
+        case .didStartTurn(let faction):
+            // On turn start refresh action pool and automatically select the first pawn
+            let activePawns = state.gridMap.pawnNodes.filter { $0.faction == faction && !isPawnInBattle($0) }
+            log("on turn start there are \(activePawns.count) active pawn(s)")
+            guard let activeFaction = activePawns.first?.faction else {
+                log("no active pawns, ending turn automatically.")
+                turnStore.dispatchExternalAction(.endTurn)
+                return
+            }
+            
+            let activePool = FactionActionPool(pawns: activePawns)
+            log("setting new action pool with pawns of faction \(activeFaction)")
+            update { state in
+                state.activeActionPool = activePool
+                state.selectedPawn = activePawns.first
+            }
+        case .didEndTurn(let faction):
+            log("did end turn")
+        case .didStartRound:
+            log("did start round")
+        case .didEndRound:
+            let battles = state.stagedBattles
+            update { $0.stagedBattles = [:] }
+            dispatchOutput(.didEndRoundWithBattles(Array(battles.values)))
+        }
     }
 }
 
@@ -272,19 +289,11 @@ extension StrategyGridStore {
         
         if let selectedPawn = state.selectedPawn {
             update { $0.selectedCell = cell }
-            
-            if state.currentActions.isEmpty && occupant.faction == state.activeFaction {
-                update { state in
-                    state.selectedCell = nil
-                    state.selectedPawn = occupant
-                }
-            }
-            
         } else if occupant.faction == state.activeFaction {
             log("No active pawn. Selected active pawn")
             update { $0.selectedPawn = occupant }
         } else {
-            log("No active pawn. Selected inactive pawn")
+            log("No active pawn. Selected inactive pawn of faction: \(occupant.faction). Active faction is \(state.activeFaction)")
         }
     }
 }

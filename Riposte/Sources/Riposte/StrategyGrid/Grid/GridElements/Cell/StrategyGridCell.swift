@@ -8,7 +8,7 @@
 import Foundation
 
 enum StrategyGridCellIndicatorType {
-    case none, move, attack, support
+    case none, move, attack, support, path
 }
 
 protocol StrategyGridCell: GloballyPositioned, NodeEquatable, WorldAware {

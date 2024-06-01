@@ -35,6 +35,8 @@ class StrategyGridCellNode: StaticBody3D, StrategyGridCell {
             attackIndicator?.show()
         case .support:
             supportIndicator?.show()
+        case .path:
+            pathIndicator?.show()
         }
     }
     
